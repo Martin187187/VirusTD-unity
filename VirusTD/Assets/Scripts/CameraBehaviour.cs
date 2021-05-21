@@ -5,23 +5,29 @@ using UnityEngine;
 public class CameraBehaviour : MonoBehaviour
 {
     public Transform trackedObject;
-    public Vector3 positionOffset = new Vector3(0, 10, -10);
-    public float speed = 0.02f;
+    public Transform trackedObject2;
 
-    private Vector3 oldMousePosition;
+    public float mouseSensitivity = 100f;
+    public float mouseWheelSensitivity = 200f;
 
-    void Start(){
-        oldMousePosition = Input.mousePosition;
-        transform.Translate(positionOffset);
-    }
+
+    private float xRotation = 0f;
+    private float distance = 0f;
+
     void Update()
     {
-        if(Input.GetMouseButton(2)){
-            Vector3 mouseMovement = Input.mousePosition - oldMousePosition;
-        transform.Translate(new Vector3(mouseMovement.x * speed * Time.deltaTime, 0, mouseMovement.y * speed * Time.deltaTime));
+        if(Input.GetMouseButton(1)){
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+            
+            xRotation -= mouseY;
+            
+            trackedObject.Rotate(Vector3.up * mouseX);
+            trackedObject2.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         }
-        oldMousePosition = Input.mousePosition;
+        distance += Input.GetAxis("Mouse ScrollWheel") * mouseWheelSensitivity * Time.deltaTime* 100;
+        transform.localPosition = new Vector3(0,0, distance);
 
     }
 }
