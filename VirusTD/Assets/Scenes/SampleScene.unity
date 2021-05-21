@@ -316,6 +316,8 @@ MonoBehaviour:
   trackedObject2: {fileID: 990210825}
   mouseSensitivity: 500
   mouseWheelSensitivity: 200
+  mouseWheelMin: -100
+  mouseWheelMax: 0
 --- !u!1 &990210824
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,7 +407,7 @@ GameObject:
   - component: {fileID: 1632793308}
   - component: {fileID: 1632793309}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Third Person
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

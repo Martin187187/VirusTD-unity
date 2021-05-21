@@ -10,6 +10,8 @@ public class CameraBehaviour : MonoBehaviour
     public float mouseSensitivity = 100f;
     public float mouseWheelSensitivity = 200f;
 
+    public float mouseWheelMin = 0f;
+    public float mouseWheelMax = 100f;
 
     private float xRotation = 0f;
     private float distance = 0f;
