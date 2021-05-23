@@ -58,7 +58,7 @@ public class TerrainManager : MonoBehaviour
             }
         }
         
-        if(Input.GetMouseButtonDown(0)){
+        if(Input.GetMouseButtonDown(0)&&Input.GetKey(KeyCode.LeftShift)){
             Vector3 mouse = Input.mousePosition;
             Ray castPoint = Camera.main.ScreenPointToRay(mouse);
             RaycastHit hit;
