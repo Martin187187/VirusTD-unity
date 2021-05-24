@@ -100,8 +100,7 @@ public class TerrainManager : MonoBehaviour
                     Vector3Int roundedPosition = new Vector3Int(xa, ya, za);
                     flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
 
-                    GameObject n = Instantiate(Resources.Load<GameObject>("Tower/Machinegun"), roundedPosition - new Vector3(0.25f,0.25f,0.25f), new Quaternion(-90, 0, 0, 90));
-                    n.AddComponent<Animator>();
+                    Machinegun mg = new Machinegun(roundedPosition - new Vector3(0.25f,0.25f,0.25f), new Vector3(1,1,1), transform);
 
                 }
             
