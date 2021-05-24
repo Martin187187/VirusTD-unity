@@ -33,22 +33,23 @@ public class TerrainManager : MonoBehaviour
         }
         entityList = new List<Projectile>();
         entityList.Add(new Projectile(new Vector3(4, 25, 4), new Vector3(1, 1, 1), 5, transform, m_material));
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        foreach(Projectile p in entityList)
+
+        foreach (Projectile p in entityList)
         {
             //terrain hit
             Vector3Int position = getBlockPosition(p.getPosition());
 
             //TODO negative values could be possible later...
             //updates if it hit any terrain
-            if(isInBounderies(position)){
-                
+            if (isInBounderies(position))
+            {
+
                 Block currentBlock = blockArray[position.x, position.y, position.z];
                 currentBlock.subtractMesh(p);
                 currentBlock.updateMesh();
@@ -57,77 +58,109 @@ public class TerrainManager : MonoBehaviour
 
             }
         }
-        
-        if(Input.GetMouseButtonDown(0)&&Input.GetKey(KeyCode.LeftShift)){
+
+        if (Input.GetMouseButtonDown(0))
+        {
             Vector3 mouse = Input.mousePosition;
             Ray castPoint = Camera.main.ScreenPointToRay(mouse);
             RaycastHit hit;
 
-            if(Physics.Raycast(castPoint, out hit, Mathf.Infinity)){
+            if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
+            {
+                    Vector3 position = hit.point;
 
-                //terrain hit
-                Vector3Int blockPosition = getBlockPosition(hit.point);
-                
-                Vector3 position = hit.point;
-                Debug.Log("position: " + position.ToString());
-                if(isInBounderies(blockPosition)){
+                if (Input.GetKey(KeyCode.LeftShift)) { 
+                    //terrain hit
 
-                    if(!isSaved){
-                        Debug.Log("save Position");
-                        savedPosition = position;
-                        isSaved = true;
-                        
-                    } else {
-                        Debug.Log("dig Hole");
+                    if (isInBounderies(getBlockPosition(position)))
+                    {
 
-                        Vector3Int savedBlockPosition = getBlockPosition(savedPosition);
+                        if (!isSaved)
+                        {
+                            Debug.Log("save Position");
+                            savedPosition = position;
+                            isSaved = true;
 
-                        int startX = (int)Mathf.Min(savedBlockPosition.x, blockPosition.x);
-                        int endX = (int)Mathf.Max(savedBlockPosition.x, blockPosition.x);
-                        //int startY = (int)Mathf.Min(savedBlockPosition.y, blockPosition.y);
-                        //int endY = (int)Mathf.Max(savedBlockPosition.y, blockPosition.y);
-                        int startY = 0;
-                        int endY = savedBlockPosition.y;
-                        int startZ = (int)Mathf.Min(savedBlockPosition.z, blockPosition.z);
-                        int endZ = (int)Mathf.Max(savedBlockPosition.z, blockPosition.z);
-
-                        float blockStartX = Mathf.Min(savedPosition.x, position.x);
-                        float blockEndX = Mathf.Max(savedPosition.x, position.x);
-                        //float blockStartY = Mathf.Min(savedPosition.y, position.y);
-                        //float blockEndY = Mathf.Max(savedPosition.y, position.y);
-                        float blockStartY = 0;
-                        float blockEndY = savedPosition.y;
-                        float blockStartZ = Mathf.Min(savedPosition.z, position.z);
-                        float blockEndZ = Mathf.Max(savedPosition.z, position.z);
-
-                        Debug.Log(blockEndY+"26.3: " + (int)((blockEndY % chunkLength)/0.5f+0.5f));
-                        for(int i = startX; i <= endX; i++){
-                            for(int k = startY; k <= endY; k++){
-                                for(int j = startZ; j <= endZ; j++){
-                                    Block block = blockArray[i, k, j];
-
-                                    Vector3 scale = block.getScale();
-                                    int gridStartX = i == startX ? (int)((blockStartX % chunkLength)/scale.x+0.5f) : 0;
-                                    int gridStartY = k == startY ? (int)((blockStartY % chunkLength)/scale.y+0.5f) : 0;
-                                    int gridStartZ = j == startZ ? (int)((blockStartZ % chunkLength)/scale.z+0.5f) : 0;
-
-                                    int gridEndX = (i == endX) ? (int)((blockEndX % chunkLength)/scale.x+0.5f) : verteciesInChunk;
-                                    int gridEndY = (k == endY) ? (int)((blockEndY % chunkLength)/scale.y+0.5f) : verteciesInChunk;
-                                    int gridEndZ = (j == endZ) ? (int)((blockEndZ % chunkLength)/scale.z+0.5f) : verteciesInChunk;
-
-                                    Vector3Int gridStartPosition = new Vector3Int(gridStartX, gridStartY, gridStartZ);
-                                    Vector3Int gridEndPosition = new Vector3Int(gridEndX, gridEndY, gridEndZ);
-
-                                    block.digHole(gridStartPosition, gridEndPosition);
-                                    block.GetGameObject().GetComponent<MeshCollider>().sharedMesh = block.GetMesh();
-                                }
-                            }
                         }
-                        isSaved = false;
+                        else
+                        {
+                            Debug.Log("dig Hole");
+                            flatTerrain(savedPosition, position);
+                            isSaved = false;
+                        }
                     }
+
+
+                } else
+                {
+                    int xa = ((int)(position.x +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
+                    int ya = ((int)(position.y +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
+                    int za = ((int)(position.z +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
+
+                    Vector3Int roundedPosition = new Vector3Int(xa, ya, za);
+                    flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
+
+                    GameObject n = Instantiate(Resources.Load<GameObject>("Tower/Machinegun"), roundedPosition - new Vector3(0.25f,0.25f,0.25f), new Quaternion(-90, 0, 0, 90));
+                    n.AddComponent<Animator>();
+
                 }
+            
+            
+            
+            
+            
+            
+            
+            }
+        }
+    }
 
+    public void flatTerrain(Vector3 first, Vector3 second){
+        
+        Vector3Int savedBlockPosition = getBlockPosition(first);
+        Vector3Int blockPosition = getBlockPosition(second);
+        int startX = (int)Mathf.Min(savedBlockPosition.x, blockPosition.x);
+        int endX = (int)Mathf.Max(savedBlockPosition.x, blockPosition.x);
+        //int startY = (int)Mathf.Min(savedBlockPosition.y, blockPosition.y);
+        //int endY = (int)Mathf.Max(savedBlockPosition.y, blockPosition.y);
+        int startY = 0;
+        int endY = savedBlockPosition.y;
+        int startZ = (int)Mathf.Min(savedBlockPosition.z, blockPosition.z);
+        int endZ = (int)Mathf.Max(savedBlockPosition.z, blockPosition.z);
 
+        float blockStartX = Mathf.Min(first.x, second.x);
+        float blockEndX = Mathf.Max(first.x, second.x);
+        //float blockStartY = Mathf.Min(first.y, second.y);
+        //float blockEndY = Mathf.Max(first.y, second.y);
+        float blockStartY = 0;
+        float blockEndY = first.y;
+        float blockStartZ = Mathf.Min(first.z, second.z);
+        float blockEndZ = Mathf.Max(first.z, second.z);
+
+        Debug.Log(blockEndY + "26.3: " + (int)((blockEndY % chunkLength) / 0.5f + 0.5f));
+        for (int i = startX; i <= endX; i++)
+        {
+            for (int k = startY; k <= endY; k++)
+            {
+                for (int j = startZ; j <= endZ; j++)
+                {
+                    Block block = blockArray[i, k, j];
+
+                    Vector3 scale = block.getScale();
+                    int gridStartX = i == startX ? (int)((blockStartX % chunkLength) / scale.x + 0.5f) : 0;
+                    int gridStartY = k == startY ? (int)((blockStartY % chunkLength) / scale.y + 0.5f) : 0;
+                    int gridStartZ = j == startZ ? (int)((blockStartZ % chunkLength) / scale.z + 0.5f) : 0;
+
+                    int gridEndX = (i == endX) ? (int)((blockEndX % chunkLength) / scale.x + 0.5f) : verteciesInChunk;
+                    int gridEndY = (k == endY) ? (int)((blockEndY % chunkLength) / scale.y + 0.5f) : verteciesInChunk;
+                    int gridEndZ = (j == endZ) ? (int)((blockEndZ % chunkLength) / scale.z + 0.5f) : verteciesInChunk;
+
+                    Vector3Int gridStartPosition = new Vector3Int(gridStartX, gridStartY, gridStartZ);
+                    Vector3Int gridEndPosition = new Vector3Int(gridEndX, gridEndY, gridEndZ);
+
+                    block.digHole(gridStartPosition, gridEndPosition);
+                    block.GetGameObject().GetComponent<MeshCollider>().sharedMesh = block.GetMesh();
+                }
             }
         }
     }
