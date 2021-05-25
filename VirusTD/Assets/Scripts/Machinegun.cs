@@ -4,5 +4,11 @@ using UnityEngine;
 
 public class Machinegun : Tower
 {
+    public void Start() {
+        
+    }
 
+    public void Update() {
+        
+    }
 }
