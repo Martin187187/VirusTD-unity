@@ -21,18 +21,37 @@ public class TerrainManager : MonoBehaviour
     void Start()
     {
         blockArray = new Block[numberOfChunks.x, numberOfChunks.y, numberOfChunks.z];
+
+        GameObject terrain = new GameObject("Terrain");
+        terrain.transform.parent = transform;
         for (int x = 0; x < numberOfChunks.x; x++)
         {
             for (int y = 0; y < numberOfChunks.y; y++)
             {
                 for (int z = 0; z < numberOfChunks.z; z++)
                 {
-                    blockArray[x, y, z] = new Block(new Vector3(x,y,z), new Vector3(chunkLength, chunkLength, chunkLength), verteciesInChunk, transform, m_material);
+                    GameObject ob = new GameObject("Block");
+                    ob.transform.localPosition = new Vector3(x*chunkLength, y*chunkLength, z*chunkLength);
+                    ob.transform.localScale = new Vector3(chunkLength/(verteciesInChunk-1f), chunkLength/(verteciesInChunk-1f), chunkLength/(verteciesInChunk-1f));
+                    ob.transform.parent = terrain.transform;
+                    Block b = ob.AddComponent<Block>();
+                    blockArray[x, y, z] = b;
+                    b.index = new Vector3Int(x,y,z);
+                    b.gridSize = verteciesInChunk;
+                    b.material = m_material;
                 }
             }
         }
         entityList = new List<Projectile>();
-        entityList.Add(new Projectile(new Vector3(4, 25, 4), new Vector3(1, 1, 1), 5, transform, m_material));
+        GameObject en = new GameObject("Projectile");
+
+        en.transform.localPosition = new Vector3(4, 25, 4);
+        en.transform.localScale = new Vector3(1/4f, 1/4f, 1/4f);
+        en.transform.parent = transform;
+        Projectile p = en.AddComponent<Projectile>();
+        p.gridSize = 5;
+        p.material = m_material;
+        entityList.Add(p);
 
     }
 
@@ -53,8 +72,7 @@ public class TerrainManager : MonoBehaviour
                 Block currentBlock = blockArray[position.x, position.y, position.z];
                 currentBlock.subtractMesh(p);
                 currentBlock.updateMesh();
-                currentBlock.GetGameObject().GetComponent<MeshFilter>().mesh = currentBlock.GetMesh();
-                currentBlock.GetGameObject().GetComponent<MeshCollider>().sharedMesh = currentBlock.GetMesh();
+                currentBlock.gameObject.GetComponent<MeshCollider>().sharedMesh = currentBlock.GetComponent<MeshFilter>().mesh;
 
             }
         }
@@ -160,7 +178,7 @@ public class TerrainManager : MonoBehaviour
                     Vector3Int gridEndPosition = new Vector3Int(gridEndX, gridEndY, gridEndZ);
 
                     block.digHole(gridStartPosition, gridEndPosition);
-                    block.GetGameObject().GetComponent<MeshCollider>().sharedMesh = block.GetMesh();
+                    block.gameObject.GetComponent<MeshCollider>().sharedMesh = block.GetComponent<MeshFilter>().mesh;
                 }
             }
         }
