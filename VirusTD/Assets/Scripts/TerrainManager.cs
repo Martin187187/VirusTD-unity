@@ -43,6 +43,7 @@ public class TerrainManager : MonoBehaviour
             }
         }
         entityList = new List<Projectile>();
+        
         GameObject en = new GameObject("Projectile");
 
         en.transform.localPosition = new Vector3(4, 25, 4);
@@ -52,15 +53,16 @@ public class TerrainManager : MonoBehaviour
         p.gridSize = 5;
         p.material = m_material;
         entityList.Add(p);
-
+        
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        foreach (Projectile p in entityList)
+        for (int i = 0; i < entityList.Count; i++)
         {
+            Projectile p = entityList[i];
             //terrain hit
             Vector3Int position = getBlockPosition(p.getPosition());
 
@@ -70,10 +72,18 @@ public class TerrainManager : MonoBehaviour
             {
 
                 Block currentBlock = blockArray[position.x, position.y, position.z];
-                currentBlock.subtractMesh(p);
-                currentBlock.updateMesh();
-                currentBlock.gameObject.GetComponent<MeshCollider>().sharedMesh = currentBlock.GetComponent<MeshFilter>().mesh;
-
+                
+                if(currentBlock.intersect(p)){
+                    currentBlock.updateMesh();
+                    entityList.Remove(p);
+                    Destroy(p.gameObject);
+                    Debug.Log("destroy");
+                } 
+                
+            } else if(p.transform.localPosition.magnitude>1000){
+                    entityList.Remove(p);
+                    Destroy(p.gameObject);
+                    Debug.Log("destroy2");
             }
         }
 
@@ -121,7 +131,8 @@ public class TerrainManager : MonoBehaviour
                     GameObject ob = Instantiate(Resources.Load<GameObject>("Tower/Machinegun"), roundedPosition - new Vector3(0.25f,0.25f,0.25f), Quaternion.identity);
                     ob.transform.parent = transform;
                     ob.AddComponent<Animator>();
-                    ob.AddComponent<Machinegun>();
+                    Machinegun gun = ob.AddComponent<Machinegun>();
+                    gun.init(entityList);
                 }
             
             

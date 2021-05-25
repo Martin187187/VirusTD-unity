@@ -13,7 +13,7 @@ public abstract class DynamicMesh : MonoBehaviour
 
 
     public void subtractMesh(DynamicMesh meshSubtrahend){
-        int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * gridSize * gridSize;
+        int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * (gridSize-1) * (gridSize-1);
         for (int x = 0; x < meshSubtrahend.gridSize; x++)
         {  
             for (int y = 0; y < meshSubtrahend.gridSize; y++)
@@ -37,6 +37,7 @@ public abstract class DynamicMesh : MonoBehaviour
                     int idx = x + y * meshSubtrahend.gridSize + z * meshSubtrahend.gridSize * meshSubtrahend.gridSize;
                     int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
 
+                    Debug.Log("aa: " + sidx);
                     float substrat = meshSubtrahend.voxels[idx];
                     if(sidx>=0&&sidx <=sidxMax){
                         voxels[sidx] = 1;
@@ -46,6 +47,33 @@ public abstract class DynamicMesh : MonoBehaviour
             
         }
         
+    }
+
+    public bool intersect(DynamicMesh subtrahend)
+    {
+        int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * (gridSize-1) * (gridSize-1);
+        Vector3 positionSubtrahend = subtrahend.transform.localPosition;
+        Vector3 positionMinuend = transform.localPosition;
+
+        Vector3 scale = transform.localScale;
+        
+        float fx = positionSubtrahend.x - positionMinuend.x;
+        float fy = positionSubtrahend.y - positionMinuend.y;
+        float fz = positionSubtrahend.z - positionMinuend.z;
+        
+        int sx = Mathf.RoundToInt(fx / scale.x);
+        int sy = Mathf.RoundToInt(fy / scale.y);
+        int sz = Mathf.RoundToInt(fz / scale.z);
+        
+        int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
+        if(sidx>=0&&sidx <= sidxMax){
+            if(voxels[sidx]<1){
+                voxels[sidx] = 1;
+                return true;
+            }
+            
+        }
+        return false;
     }
     public void updateMesh()
     {
@@ -64,7 +92,10 @@ public abstract class DynamicMesh : MonoBehaviour
         mesh.RecalculateNormals();
 
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
-        gameObject.GetComponent<MeshCollider>().sharedMesh = mesh;
+
+        if(this is Block){
+            gameObject.GetComponent<MeshCollider>().sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
+        }
     }
     public Vector3 getPosition(){
         return transform.localPosition;
