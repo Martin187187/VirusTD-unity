@@ -119,7 +119,7 @@ public class TerrainManager : MonoBehaviour
                     }
 
 
-                } else
+                } else if(Input.GetKey(KeyCode.M))
                 {
                     int xa = ((int)(position.x +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
                     int ya = ((int)(position.y +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
@@ -142,7 +142,8 @@ public class TerrainManager : MonoBehaviour
             
             
             }
-        }
+        } 
+        
     }
 
     public void flatTerrain(Vector3 first, Vector3 second){

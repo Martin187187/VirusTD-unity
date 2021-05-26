@@ -40,4 +40,5 @@ public class Machinegun : Tower
             yTarget.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
             xTarget.LookAt(new Vector3(target.position.x, target.position.y, target.position.z));
     }
+
 }
