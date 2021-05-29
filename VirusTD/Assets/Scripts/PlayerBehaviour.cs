@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    public Transform po;
     public float speed = 20f;
     private Vector3 oldMousePosition;
     // Start is called before the first frame update
@@ -17,9 +16,7 @@ public class PlayerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(po!=null){
-            transform.localPosition = po.localPosition;
-        } else {
+
         if(Input.GetMouseButton(2)){
             Vector3 mouseMovement = Input.mousePosition - oldMousePosition;
         transform.Translate(new Vector3(mouseMovement.x * speed * Time.deltaTime, 0, mouseMovement.y * speed * Time.deltaTime));
@@ -49,6 +46,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
         
         oldMousePosition = Input.mousePosition;
-        }
+        
     }
 }

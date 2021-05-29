@@ -46,7 +46,7 @@ public class TerrainManager : MonoBehaviour
         
         GameObject en = new GameObject("Projectile");
 
-        en.transform.localPosition = new Vector3(4, 25, 4);
+        en.transform.localPosition = new Vector3(4, 40, 4);
         en.transform.localScale = new Vector3(1/4f, 1/4f, 1/4f);
         en.transform.parent = transform;
         Projectile p = en.AddComponent<Projectile>();
@@ -60,6 +60,8 @@ public class TerrainManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Projectile e = entityList[0];
+        e.transform.localPosition+=new Vector3(0.01f, 0, 0);
         for (int i = 0; i < entityList.Count; i++)
         {
             Projectile p = entityList[i];
@@ -96,8 +98,12 @@ public class TerrainManager : MonoBehaviour
             if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
             {
                     Vector3 position = hit.point;
+                
+                if(hit.collider.gameObject.name.Equals("machinegun(Clone)")){
 
-                if (Input.GetKey(KeyCode.LeftShift)) { 
+                    GameObject.Find("Third Person").transform.localPosition = hit.collider.gameObject.transform.localPosition;
+                } 
+                else if (Input.GetKey(KeyCode.LeftShift)) { 
                     //terrain hit
 
                     if (isInBounderies(getBlockPosition(position)))
