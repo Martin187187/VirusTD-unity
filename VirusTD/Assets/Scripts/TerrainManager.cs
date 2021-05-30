@@ -138,7 +138,7 @@ public class TerrainManager : MonoBehaviour
                     ob.transform.parent = transform;
                     ob.AddComponent<Animator>();
                     Machinegun gun = ob.AddComponent<Machinegun>();
-                    gun.init(entityList);
+                    gun.projectileList = entityList;
                 }
             
             
