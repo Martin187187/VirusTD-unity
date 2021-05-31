@@ -29,17 +29,10 @@ public class Machinegun : Tower
     }
 
     public void shoot(){
-        GameObject projectile = new GameObject("Projectile");
         
         Quaternion direction = transform.GetChild(0).transform.localRotation * transform.GetChild(0).GetChild(0).transform.localRotation;
-        projectile.transform.localPosition = transform.localPosition + direction * new Vector3(0, 1.834f, 2.338f);
-        projectile.transform.localScale = new Vector3(1/32f, 1/32f, 1/32f);
 
-        Projectile p = projectile.AddComponent<Projectile>();
-        p.gridSize = 4;
-        p.velocity = direction * new Vector3(0, 0, 1);
-        p.material = Resources.Load("Material/Material", typeof(Material)) as Material;
-        projectileList.Add(p);
+        projectileList.Add(Singleton.projectileFactory.ConstructEntity(transform.localPosition + direction * new Vector3(0, 1.834f, 2.338f), new Vector3(1/32f, 1/32f, 1/32f), null, 4, direction * new Vector3(0, 0, 1)));
     }
 
     public bool aimAt(Transform target){

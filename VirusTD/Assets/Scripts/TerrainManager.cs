@@ -11,7 +11,6 @@ public class TerrainManager : MonoBehaviour
     public Vector3Int numberOfChunks = new Vector3Int(1, 2, 1);
     public int chunkLength = 8;
     public int verteciesInChunk = 3;
-    public Material m_material;
     // Start is called before the first frame update
 
 
@@ -30,29 +29,12 @@ public class TerrainManager : MonoBehaviour
             {
                 for (int z = 0; z < numberOfChunks.z; z++)
                 {
-                    GameObject ob = new GameObject("Block");
-                    ob.transform.localPosition = new Vector3(x*chunkLength, y*chunkLength, z*chunkLength);
-                    ob.transform.localScale = new Vector3(chunkLength/(verteciesInChunk-1f), chunkLength/(verteciesInChunk-1f), chunkLength/(verteciesInChunk-1f));
-                    ob.transform.parent = terrain.transform;
-                    Block b = ob.AddComponent<Block>();
-                    blockArray[x, y, z] = b;
-                    b.index = new Vector3Int(x,y,z);
-                    b.gridSize = verteciesInChunk;
-                    b.material = m_material;
+                    blockArray[x, y, z] = Singleton.blockFactory.ConstructEntity(new Vector3Int(x,y,z), terrain.transform, chunkLength, verteciesInChunk);
                 }
             }
         }
         entityList = new List<Projectile>();
-        
-        GameObject en = new GameObject("Projectile");
-
-        en.transform.localPosition = new Vector3(4, 40, 4);
-        en.transform.localScale = new Vector3(1/4f, 1/4f, 1/4f);
-        en.transform.parent = transform;
-        Projectile p = en.AddComponent<Projectile>();
-        p.gridSize = 5;
-        p.material = m_material;
-        entityList.Add(p);
+        entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(1,0,0)));
         
         
     }
@@ -99,11 +81,8 @@ public class TerrainManager : MonoBehaviour
             {
                     Vector3 position = hit.point;
                 
-                if(hit.collider.gameObject.name.Equals("machinegun(Clone)")){
-
-                    GameObject.Find("Third Person").transform.localPosition = hit.collider.gameObject.transform.localPosition;
-                } 
-                else if (Input.GetKey(KeyCode.LeftShift)) { 
+                
+                if (Input.GetKey(KeyCode.LeftShift)) { 
                     //terrain hit
 
                     if (isInBounderies(getBlockPosition(position)))
@@ -134,11 +113,7 @@ public class TerrainManager : MonoBehaviour
                     Vector3Int roundedPosition = new Vector3Int(xa, ya, za);
                     flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
 
-                    GameObject ob = Instantiate(Resources.Load<GameObject>("Tower/Machinegun"), roundedPosition - new Vector3(0.25f,0.25f,0.25f), Quaternion.identity);
-                    ob.transform.parent = transform;
-                    ob.AddComponent<Animator>();
-                    Machinegun gun = ob.AddComponent<Machinegun>();
-                    gun.projectileList = entityList;
+                    Singleton.machinegunFactory.ConstructEntity(roundedPosition, new Vector3(0.5f, 0.5f, 0.5f), transform, entityList);
                 }
             
             
