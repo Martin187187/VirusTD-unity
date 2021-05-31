@@ -16,7 +16,7 @@ public class PlayerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         
+
         if(Input.GetMouseButton(2)){
             Vector3 mouseMovement = Input.mousePosition - oldMousePosition;
         transform.Translate(new Vector3(mouseMovement.x * speed * Time.deltaTime, 0, mouseMovement.y * speed * Time.deltaTime));
@@ -46,5 +46,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
         
         oldMousePosition = Input.mousePosition;
+        
     }
 }

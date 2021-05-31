@@ -15,7 +15,7 @@ public class Block : DynamicMesh
         gameObject.AddComponent<MeshCollider>();
 
         updateMesh();
-
+        
         
         
         
@@ -34,8 +34,9 @@ public class Block : DynamicMesh
                 }
             }
             updateMesh();
+            
     }
-
+ 
     
 
 }

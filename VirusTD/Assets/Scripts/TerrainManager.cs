@@ -43,24 +43,28 @@ public class TerrainManager : MonoBehaviour
             }
         }
         entityList = new List<Projectile>();
+        
         GameObject en = new GameObject("Projectile");
 
-        en.transform.localPosition = new Vector3(4, 25, 4);
+        en.transform.localPosition = new Vector3(4, 40, 4);
         en.transform.localScale = new Vector3(1/4f, 1/4f, 1/4f);
         en.transform.parent = transform;
         Projectile p = en.AddComponent<Projectile>();
         p.gridSize = 5;
         p.material = m_material;
         entityList.Add(p);
-
+        
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        foreach (Projectile p in entityList)
+        Projectile e = entityList[0];
+        e.transform.localPosition+=new Vector3(0.01f, 0, 0);
+        for (int i = 0; i < entityList.Count; i++)
         {
+            Projectile p = entityList[i];
             //terrain hit
             Vector3Int position = getBlockPosition(p.getPosition());
 
@@ -70,10 +74,18 @@ public class TerrainManager : MonoBehaviour
             {
 
                 Block currentBlock = blockArray[position.x, position.y, position.z];
-                currentBlock.subtractMesh(p);
-                currentBlock.updateMesh();
-                currentBlock.gameObject.GetComponent<MeshCollider>().sharedMesh = currentBlock.GetComponent<MeshFilter>().mesh;
-
+                
+                if(currentBlock.intersect(p)){
+                    currentBlock.updateMesh();
+                    entityList.Remove(p);
+                    Destroy(p.gameObject);
+                    Debug.Log("destroy");
+                } 
+                
+            } else if(p.transform.localPosition.magnitude>1000){
+                    entityList.Remove(p);
+                    Destroy(p.gameObject);
+                    Debug.Log("destroy2");
             }
         }
 
@@ -86,8 +98,12 @@ public class TerrainManager : MonoBehaviour
             if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
             {
                     Vector3 position = hit.point;
+                
+                if(hit.collider.gameObject.name.Equals("machinegun(Clone)")){
 
-                if (Input.GetKey(KeyCode.LeftShift)) { 
+                    GameObject.Find("Third Person").transform.localPosition = hit.collider.gameObject.transform.localPosition;
+                } 
+                else if (Input.GetKey(KeyCode.LeftShift)) { 
                     //terrain hit
 
                     if (isInBounderies(getBlockPosition(position)))
@@ -109,7 +125,7 @@ public class TerrainManager : MonoBehaviour
                     }
 
 
-                } else
+                } else if(Input.GetKey(KeyCode.M))
                 {
                     int xa = ((int)(position.x +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
                     int ya = ((int)(position.y +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
@@ -121,7 +137,8 @@ public class TerrainManager : MonoBehaviour
                     GameObject ob = Instantiate(Resources.Load<GameObject>("Tower/Machinegun"), roundedPosition - new Vector3(0.25f,0.25f,0.25f), Quaternion.identity);
                     ob.transform.parent = transform;
                     ob.AddComponent<Animator>();
-                    ob.AddComponent<Machinegun>();
+                    Machinegun gun = ob.AddComponent<Machinegun>();
+                    gun.projectileList = entityList;
                 }
             
             
@@ -131,7 +148,8 @@ public class TerrainManager : MonoBehaviour
             
             
             }
-        }
+        } 
+        
     }
 
     public void flatTerrain(Vector3 first, Vector3 second){
