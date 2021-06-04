@@ -18,8 +18,9 @@ public class Projectile : DynamicMesh
 
 
         updateMesh();
-        AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test.asset");
-        AssetDatabase.SaveAssets();
+
+        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test.asset");
+        //AssetDatabase.SaveAssets();
     }
 
     public void Update() {

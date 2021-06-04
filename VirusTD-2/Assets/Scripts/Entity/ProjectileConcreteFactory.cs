@@ -13,7 +13,7 @@ public class ProjectileConcreteFactory
         en.transform.parent = transform;
         Projectile p = en.AddComponent<Projectile>();
         p.gridSize = 5;
-        p.material = Resources.Load("Material/Material", typeof(Material)) as Material;
+        p.material = Resources.Load("Material", typeof(Material)) as Material;
         p.velocity = velocity;
         return p;
     }
