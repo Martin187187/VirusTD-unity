@@ -18,8 +18,8 @@ public class Block : DynamicMesh
         updateMesh();
         
         
-        AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.y + ".asset");
-        AssetDatabase.SaveAssets();
+        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.y + ".asset");
+        //AssetDatabase.SaveAssets();
         
         
 

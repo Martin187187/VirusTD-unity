@@ -152,7 +152,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 8
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b160b4d37e87547bd9a65fe9605fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfChunks: {x: 1, y: 4, z: 1}
+  numberOfChunks: {x: 16, y: 4, z: 16}
   chunkLength: 8
   verteciesInChunk: 17
 --- !u!1 &1632793307
