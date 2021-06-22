@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MeshBuilder 
-{
-    
+{   
+    private static TerrainCharacteristic characteristic;
+    public static void init(TerrainCharacteristic b){
+        characteristic = b;
+    }
     public static float[] createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale){
         float[] voxels = new float[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
@@ -20,14 +23,14 @@ public class MeshBuilder
                     float fy = position.y + y / (gridSize - 1.0f);
                     float fz = position.z + z / (gridSize - 1.0f);
 
-                    float y2d = Mathf.PerlinNoise(fx*perlinNoiseScale, fz*perlinNoiseScale)*2;
+                    float y2d = characteristic.GetNodeResult(fx, fz).getHeight();
                     int idx = x + y * gridSize + z * gridSize * gridSize;
-
-                    if(fy-2>y2d)
+                    if(fy>y2d) {
                         voxels[idx] = 1;
-                    else
+                    } else {
                         //voxels[idx] = fractal.Sample3D(fx, fy, fz);
                         voxels[idx] = -1;
+                    }
                 }
             }
             

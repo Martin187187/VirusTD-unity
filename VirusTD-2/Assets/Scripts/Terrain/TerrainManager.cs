@@ -10,15 +10,18 @@ public class TerrainManager : MonoBehaviour
     Block[,,] blockArray;
     public Vector3Int numberOfChunks = new Vector3Int(1, 2, 1);
     public int chunkLength = 8;
-    public int verteciesInChunk = 3;
+    public int gridSize = 3;
     // Start is called before the first frame update
 
-
+    public TerrainCharacteristic characteristic;
 
     private Vector3 savedPosition;
     private bool isSaved = false;
     void Start()
     {
+        entityList = new List<Projectile>();
+        MeshBuilder.init(characteristic);
+
         blockArray = new Block[numberOfChunks.x, numberOfChunks.y, numberOfChunks.z];
 
         GameObject terrain = new GameObject("Terrain");
@@ -29,21 +32,20 @@ public class TerrainManager : MonoBehaviour
             {
                 for (int z = 0; z < numberOfChunks.z; z++)
                 {
-                    blockArray[x, y, z] = Singleton.blockFactory.ConstructEntity(new Vector3Int(x,y,z), terrain.transform, chunkLength, verteciesInChunk);
+                    blockArray[x, y, z] = Singleton.blockFactory.ConstructEntity(new Vector3Int(x,y,z), terrain.transform, chunkLength, gridSize);
                 }
             }
         }
-        entityList = new List<Projectile>();
-        entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(1,0,0)));
-        
+        //entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(1,0,0)));
+
+ 
+
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        Projectile e = entityList[0];
-        e.transform.localPosition+=new Vector3(0.01f, 0, 0);
         for (int i = 0; i < entityList.Count; i++)
         {
             Projectile p = entityList[i];
@@ -106,9 +108,9 @@ public class TerrainManager : MonoBehaviour
 
                 } else if(Input.GetKey(KeyCode.M))
                 {
-                    int xa = ((int)(position.x +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
-                    int ya = ((int)(position.y +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
-                    int za = ((int)(position.z +0.5f) * (verteciesInChunk-1))/(verteciesInChunk-1);
+                    int xa = ((int)(position.x +0.5f) * (gridSize-1))/(gridSize-1);
+                    int ya = ((int)(position.y +0.5f) * (gridSize-1))/(gridSize-1);
+                    int za = ((int)(position.z +0.5f) * (gridSize-1))/(gridSize-1);
 
                     Vector3Int roundedPosition = new Vector3Int(xa, ya, za);
                     flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
@@ -125,6 +127,20 @@ public class TerrainManager : MonoBehaviour
             }
         } 
         
+    }
+
+    public void reloadTerrain(){
+        for (int x = 0; x < numberOfChunks.x; x++)
+        {
+            for (int y = 0; y < numberOfChunks.y; y++)
+            {
+                for (int z = 0; z < numberOfChunks.z; z++)
+                {
+                    blockArray[x, y, z].rebuild();
+                    blockArray[x, y, z].gameObject.GetComponent<MeshCollider>().sharedMesh = blockArray[x, y, z].GetComponent<MeshFilter>().mesh;
+                }
+            }
+        }
     }
 
     public void flatTerrain(Vector3 first, Vector3 second){
@@ -163,9 +179,9 @@ public class TerrainManager : MonoBehaviour
                     int gridStartY = k == startY ? (int)((blockStartY % chunkLength) / scale.y + 0.5f) : 0;
                     int gridStartZ = j == startZ ? (int)((blockStartZ % chunkLength) / scale.z + 0.5f) : 0;
 
-                    int gridEndX = (i == endX) ? (int)((blockEndX % chunkLength) / scale.x + 0.5f) : verteciesInChunk;
-                    int gridEndY = (k == endY) ? (int)((blockEndY % chunkLength) / scale.y + 0.5f) : verteciesInChunk;
-                    int gridEndZ = (j == endZ) ? (int)((blockEndZ % chunkLength) / scale.z + 0.5f) : verteciesInChunk;
+                    int gridEndX = (i == endX) ? (int)((blockEndX % chunkLength) / scale.x + 0.5f) : gridSize;
+                    int gridEndY = (k == endY) ? (int)((blockEndY % chunkLength) / scale.y + 0.5f) : gridSize;
+                    int gridEndZ = (j == endZ) ? (int)((blockEndZ % chunkLength) / scale.z + 0.5f) : gridSize;
 
                     Vector3Int gridStartPosition = new Vector3Int(gridStartX, gridStartY, gridStartZ);
                     Vector3Int gridEndPosition = new Vector3Int(gridEndX, gridEndY, gridEndZ);

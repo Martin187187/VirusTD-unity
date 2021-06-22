@@ -100,7 +100,6 @@ public abstract class DynamicMesh : MonoBehaviour
         
         Vector2[] uvs = new Vector2[vertices.Length];
         Color[] colors = new Color[vertices.Length];
-        float max = 0;
         for (int i = 0; i < uvs.Length; i++)
         {   
             if(normals[i].x > 0)
@@ -122,11 +121,8 @@ public abstract class DynamicMesh : MonoBehaviour
             
             colors[i] = new Color(1, 1, 1);
 
-            if(vertices[i].x > max)
-                max = vertices[i].x;
         }
 
-        Debug.Log("max: " + max);
         mesh.uv = uvs;
         mesh.colors = colors;
 

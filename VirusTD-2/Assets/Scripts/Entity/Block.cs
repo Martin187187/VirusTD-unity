@@ -8,7 +8,7 @@ public class Block : DynamicMesh
 
     public void Start(){
 
-        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 0.5f);
+        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
         
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
@@ -23,6 +23,12 @@ public class Block : DynamicMesh
         
         
 
+    }
+
+    public void rebuild(){
+        
+        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        updateMesh();
     }
     public void digHole(Vector3Int start, Vector3Int end){
         for (int x = start.x; x < end.x; x++)
