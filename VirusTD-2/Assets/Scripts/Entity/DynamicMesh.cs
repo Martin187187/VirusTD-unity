@@ -94,7 +94,6 @@ public abstract class DynamicMesh : MonoBehaviour
         Mesh mesh = new Mesh();
         mesh.SetVertices(verts);
         mesh.SetTriangles(indices, 0);
-        mesh.SetColors(colors);
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
@@ -102,6 +101,7 @@ public abstract class DynamicMesh : MonoBehaviour
         Vector3[] normals = mesh.normals;
         
         Vector2[] uvs = new Vector2[vertices.Length];
+        Color[] colors2 = new Color[vertices.Length];
         for (int i = 0; i < uvs.Length; i++)
         {   
             if(normals[i].x > 0)
@@ -119,10 +119,15 @@ public abstract class DynamicMesh : MonoBehaviour
             else
                 uvs[i] = new Vector2(vertices[i].x,vertices[i].y);
 
+            if(normals[i].y > 0 )
+                colors2[i] = new Color(0.27f, 0.79f, 0.20f);
+            else
+                colors2[i] = colors[i];
 
         }
 
         mesh.uv = uvs;
+        mesh.colors = colors2;
 
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         if(this is Block){
