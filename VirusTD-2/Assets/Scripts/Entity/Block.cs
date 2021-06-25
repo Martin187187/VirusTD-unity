@@ -1,6 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEditor;
+using System;
 
 public class Block : DynamicMesh
 {
@@ -8,8 +7,9 @@ public class Block : DynamicMesh
 
     public void Start(){
 
-        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
-        
+        Tuple<float[], Color[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        voxels = results.Item1;
+        colorList = results.Item2;
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         gameObject.GetComponent<Renderer>().material = material;
@@ -27,7 +27,9 @@ public class Block : DynamicMesh
 
     public void rebuild(){
         
-        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        Tuple<float[], Color[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        voxels = results.Item1;
+        colorList = results.Item2;
         updateMesh();
     }
     public void digHole(Vector3Int start, Vector3Int end){

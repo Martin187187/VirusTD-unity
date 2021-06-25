@@ -87,12 +87,14 @@ public abstract class DynamicMesh : MonoBehaviour
         marching.Surface = 0.0f;
         List<Vector3> verts = new List<Vector3>();
         List<int> indices = new List<int>();
+        List<Color> colors = new List<Color>();
         
-        marching.Generate(voxels, gridSize, gridSize, gridSize, verts, indices);
+        marching.Generate(voxels, colorList, gridSize, gridSize, gridSize, verts, indices, colors);
     
         Mesh mesh = new Mesh();
         mesh.SetVertices(verts);
         mesh.SetTriangles(indices, 0);
+        mesh.SetColors(colors);
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
 
@@ -100,7 +102,6 @@ public abstract class DynamicMesh : MonoBehaviour
         Vector3[] normals = mesh.normals;
         
         Vector2[] uvs = new Vector2[vertices.Length];
-        Color[] colors = new Color[vertices.Length];
         for (int i = 0; i < uvs.Length; i++)
         {   
             if(normals[i].x > 0)
@@ -119,13 +120,9 @@ public abstract class DynamicMesh : MonoBehaviour
                 uvs[i] = new Vector2(vertices[i].x,vertices[i].y);
 
 
-            
-            colors[i] = new Color(1, 1, 1);
-
         }
 
         mesh.uv = uvs;
-        mesh.colors = colors;
 
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         if(this is Block){

@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class MeshBuilder 
@@ -8,8 +7,9 @@ public class MeshBuilder
     public static void init(TerrainCharacteristic b){
         characteristic = b;
     }
-    public static float[] createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale){
+    public static Tuple<float[], Color[]> createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale){
         float[] voxels = new float[gridSize * gridSize * gridSize];
+        Color[] colors = new Color[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
         {  
             for (int y = 0; y < gridSize; y++)
@@ -23,19 +23,21 @@ public class MeshBuilder
                     float fy = position.y + y / (gridSize - 1.0f);
                     float fz = position.z + z / (gridSize - 1.0f);
 
-                    float y2d = characteristic.GetNodeResult(fx, fz).getHeight();
+                    NodeResult y2d = characteristic.GetNodeResult(fx, fz);
                     int idx = x + y * gridSize + z * gridSize * gridSize;
-                    if(fy>y2d) {
+                    if(fy>y2d.getHeight()) {
                         voxels[idx] = 1;
                     } else {
                         //voxels[idx] = fractal.Sample3D(fx, fy, fz);
                         voxels[idx] = -1;
                     }
+                    colors[idx] = y2d.GetColor();
+
                 }
             }
             
         }
-        return voxels;
+        return Tuple.Create(voxels, colors);
     }
 
     public static float[] createCubeMesh(int gridSize) {

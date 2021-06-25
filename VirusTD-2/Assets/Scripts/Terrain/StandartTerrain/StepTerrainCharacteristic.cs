@@ -28,8 +28,13 @@ public class StepTerrainCharacteristic : TerrainCharacteristic
         if(floor> (terrainLevel.Count-1) || floor < 0) throw new System.Exception("number: " + floor);
         float endHeight = heightStep * amplitude + middleHeight;
 
-        float secondHeight = terrainLevel[floor].GetNodeResult(x,z).getHeight()+amplitude*invStep*floor;
-        return new NodeResult(Mathf.Max(endHeight, secondHeight), color);
+        NodeResult floorNodeResult = terrainLevel[floor].GetNodeResult(x,z);
+        float secondHeight = floorNodeResult.getHeight()+amplitude*invStep*floor;
+
+        if(endHeight>= secondHeight)
+            return new NodeResult(endHeight, color);
+        else
+            return new NodeResult(secondHeight, floorNodeResult.GetColor());
     }
 
     public override List<TerrainCharacteristic> GetTerrainCharacteristics(){

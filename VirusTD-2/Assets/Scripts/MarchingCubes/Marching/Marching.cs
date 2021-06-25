@@ -25,7 +25,7 @@ namespace MarchingCubesProject
             WindingOrder = new int[] { 0, 1, 2 };
         }
 
-        public virtual void Generate(IList<float> voxels, int width, int height, int depth, IList<Vector3> verts, IList<int> indices)
+        public virtual void Generate(IList<float> voxels, Color[] colorsInput, int width, int height, int depth, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
         {
 
             if (Surface > 0.0f)
@@ -60,7 +60,7 @@ namespace MarchingCubesProject
                         }
 
                         //Perform algorithm
-                        March(x, y, z, Cube, verts, indices);
+                        March(x, y, z, colorsInput[x + y * width + z * width * height], Cube, verts, indices, colors);
                     }
                 }
             }
@@ -70,7 +70,7 @@ namespace MarchingCubesProject
          /// <summary>
         /// MarchCube performs the Marching algorithm on a single cube
         /// </summary>
-        protected abstract void March(float x, float y, float z, float[] cube, IList<Vector3> vertList, IList<int> indexList);
+        protected abstract void March(float x, float y, float z, Color color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<Color> colorList);
 
         /// <summary>
         /// GetOffset finds the approximate point of intersection of the surface

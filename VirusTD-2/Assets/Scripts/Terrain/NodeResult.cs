@@ -21,4 +21,5 @@ public class NodeResult
     public Color GetColor(){
         return this.color;
     }
+
 }

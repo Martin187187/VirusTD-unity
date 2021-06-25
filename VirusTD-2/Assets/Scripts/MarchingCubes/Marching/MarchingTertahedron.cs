@@ -29,7 +29,7 @@ namespace MarchingCubesProject
         /// <summary>
         /// MarchCubeTetrahedron performs the Marching Tetrahedrons algorithm on a single cube
         /// </summary>
-        protected override void March(float x, float y, float z, float[] cube, IList<Vector3> vertList, IList<int> indexList)
+        protected override void March(float x, float y, float z, Color color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<Color> colorList)
         {
             int i, j, vertexInACube;
 
@@ -50,14 +50,14 @@ namespace MarchingCubesProject
                     TetrahedronValue[j] = cube[vertexInACube];
                 }
 
-                MarchTetrahedron(vertList, indexList);
+                MarchTetrahedron(vertList, indexList, color, colorList);
             }
         }
 
         /// <summary>
         /// MarchTetrahedron performs the Marching Tetrahedrons algorithm on a single tetrahedron
         /// </summary>
-        private void MarchTetrahedron(IList<Vector3> vertList, IList<int> indexList)
+        private void MarchTetrahedron(IList<Vector3> vertList, IList<int> indexList, Color color, IList<Color> colorList)
         {
             int i, j, vert, vert0, vert1, idx;
             int flagIndex = 0, edgeFlags;
@@ -101,6 +101,7 @@ namespace MarchingCubesProject
                     vert = TetrahedronTriangles[flagIndex, 3 * i + j];
                     indexList.Add(idx + WindingOrder[j]);
                     vertList.Add(EdgeVertex[vert]);
+                    colorList.Add(color);
                 }
             }
         }
