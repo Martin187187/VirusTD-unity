@@ -6,6 +6,7 @@ public class StepTerrainCharacteristic : TerrainCharacteristic
 {
     public Color color = new Color(1,1,1);
     public float middleHeight = 0, min = 2, max = 2;
+    public float curve = 1;
 
     public List<TerrainCharacteristic> terrainLevel = new List<TerrainCharacteristic>();
 
@@ -17,7 +18,7 @@ public class StepTerrainCharacteristic : TerrainCharacteristic
 
         float minScaled = (height-1)*min+1;
         float maxScaled = minScaled*max;
-        float heightCut = Mathf.Min(1, Mathf.Max(0, maxScaled));
+        float heightCut = Mathf.Pow(Mathf.Min(1, Mathf.Max(0, maxScaled)), curve);
         
         float invStep = 1/(float)(terrainLevel.Count-1);
         int floor = (int)(heightCut/invStep);

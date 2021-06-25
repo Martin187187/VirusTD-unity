@@ -14,6 +14,7 @@ public abstract class DynamicMesh : MonoBehaviour
 
 
     protected float[] voxels;
+    protected Color[] colorList;
 
 
     public void subtractMesh(DynamicMesh meshSubtrahend){

@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainManager: {fileID: 1127713738}
   scale: 1
-  amplitude: 1
+  amplitude: 0.25
   color: {r: 1, g: 1, b: 1, a: 1}
   middleHeight: 0
   min: 2
@@ -210,7 +210,8 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   middleHeight: 0
   min: 2
-  max: 2
+  max: 6
+  curve: 0.1
   terrainLevel:
   - {fileID: 86413548}
   - {fileID: 668398704}
@@ -263,7 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainManager: {fileID: 1127713738}
   scale: 1
-  amplitude: 1
+  amplitude: 0.25
   color: {r: 1, g: 1, b: 1, a: 1}
   middleHeight: 0
   min: 2
@@ -315,7 +316,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrainManager: {fileID: 1127713738}
   scale: 1
-  amplitude: 1
+  amplitude: 0.25
   color: {r: 1, g: 1, b: 1, a: 1}
   middleHeight: 0
   min: 2

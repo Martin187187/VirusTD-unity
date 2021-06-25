@@ -18,7 +18,7 @@ public class StandardTerrainCharacteristic : TerrainCharacteristic
         float maxScaled = minScaled*max;
         float heightCut = Mathf.Min(1, Mathf.Max(0, maxScaled));
         
-        float invStep = 1/steps;
+        float invStep = 1/(float)steps;
         float heightStep = (int)(heightCut/invStep)*invStep;
         return new NodeResult(heightStep * amplitude + middleHeight, color);
     }
