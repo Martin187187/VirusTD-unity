@@ -19,7 +19,7 @@ namespace MarchingCubesProject
         /// <summary>
         /// MarchCube performs the Marching Cubes algorithm on a single cube
         /// </summary>
-        protected override void March(float x, float y, float z, Color color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<Color> colorList)
+        protected override void March(float x, float y, float z, ColorMode color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<ColorMode> colorList)
         {
             int i, j, vert, idx;
             int flagIndex = 0;

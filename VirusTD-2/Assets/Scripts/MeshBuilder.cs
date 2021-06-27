@@ -7,9 +7,9 @@ public class MeshBuilder
     public static void init(TerrainCharacteristic b){
         characteristic = b;
     }
-    public static Tuple<float[], Color[]> createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale){
+    public static Tuple<float[], ColorMode[]> createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale){
         float[] voxels = new float[gridSize * gridSize * gridSize];
-        Color[] colors = new Color[gridSize * gridSize * gridSize];
+        ColorMode[] colors = new ColorMode[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
         {  
             for (int y = 0; y < gridSize; y++)
@@ -40,8 +40,9 @@ public class MeshBuilder
         return Tuple.Create(voxels, colors);
     }
 
-    public static float[] createCubeMesh(int gridSize) {
+    public static Tuple<float[], ColorMode[]> createCubeMesh(int gridSize) {
         float[] voxels = new float[gridSize * gridSize * gridSize];
+        ColorMode[] colors = new ColorMode[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
         {  
             for (int y = 0; y < gridSize; y++)
@@ -54,10 +55,11 @@ public class MeshBuilder
                         voxels[idx] = 1;
                     else
                         voxels[idx] = -1;
+                    colors[idx] = ColorMode.ROCK;
                 }
             }
         }
 
-        return voxels;
+        return Tuple.Create(voxels, colors);
     }
 }

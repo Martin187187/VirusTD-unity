@@ -10,11 +10,11 @@ public enum TextureMode
 public abstract class DynamicMesh : MonoBehaviour
 {
     public int gridSize;
-    public Material material;
+    public Material[] materials;
 
 
     protected float[] voxels;
-    protected Color[] colorList;
+    protected ColorMode[] colorList;
 
 
     public void subtractMesh(DynamicMesh meshSubtrahend){
@@ -46,6 +46,7 @@ public abstract class DynamicMesh : MonoBehaviour
                     float substrat = meshSubtrahend.voxels[idx];
                     if(sidx>=0&&sidx <=sidxMax){
                         voxels[sidx] = 1;
+                        colorList[sidx] = ColorMode.ROCK;
                     }
                 }
             }
@@ -87,7 +88,7 @@ public abstract class DynamicMesh : MonoBehaviour
         marching.Surface = 0.0f;
         List<Vector3> verts = new List<Vector3>();
         List<int> indices = new List<int>();
-        List<Color> colors = new List<Color>();
+        List<ColorMode> colors = new List<ColorMode>();
         
         marching.Generate(voxels, colorList, gridSize, gridSize, gridSize, verts, indices, colors);
     
@@ -118,11 +119,16 @@ public abstract class DynamicMesh : MonoBehaviour
                 uvs[i] = new Vector2(vertices[i].x, gridSize - 1 - vertices[i].z);
             else
                 uvs[i] = new Vector2(vertices[i].x,vertices[i].y);
-
-            if(normals[i].y > 0 )
-                colors2[i] = new Color(0.27f, 0.79f, 0.20f);
+            
+            if(colors[i] == ColorMode.ROCK)
+                colors2[i] = new Color(0, 0, 0);
+            else if(colors[i] == ColorMode.HIGHGRASS&&normals[i].y > 0)
+                colors2[i] = new Color(0.15f, 1, 0);
+            else if(normals[i].y > 0)
+                colors2[i] = new Color(0.15f, 0, 0);
             else
-                colors2[i] = colors[i];
+                colors2[i] = new Color(0, 0, 0);
+                
 
         }
 

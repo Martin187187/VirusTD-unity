@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEditor;
 
 public class Block : DynamicMesh
 {
@@ -7,18 +8,19 @@ public class Block : DynamicMesh
 
     public void Start(){
 
-        Tuple<float[], Color[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
         voxels = results.Item1;
         colorList = results.Item2;
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
-        gameObject.GetComponent<Renderer>().material = material;
-        gameObject.AddComponent<MeshCollider>();
 
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.AddComponent<MeshCollider>();
         updateMesh();
         
+        gameObject.AddComponent<MeshRenderer>();
+        gameObject.GetComponent<Renderer>().materials = materials;
         
-        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.y + ".asset");
+        
+        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.x +"-"+ index.y +"-"+ index.z +"-"+ ".asset");
         //AssetDatabase.SaveAssets();
         
         
@@ -27,7 +29,7 @@ public class Block : DynamicMesh
 
     public void rebuild(){
         
-        Tuple<float[], Color[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
         voxels = results.Item1;
         colorList = results.Item2;
         updateMesh();
@@ -41,6 +43,7 @@ public class Block : DynamicMesh
                     {   
                         int idx = x + y*gridSize+z*gridSize*gridSize;
                         voxels[idx] = -1;
+                        colorList[idx] = ColorMode.ROCK;
                     }
                 }
             }

@@ -29,7 +29,7 @@ namespace MarchingCubesProject
         /// <summary>
         /// MarchCubeTetrahedron performs the Marching Tetrahedrons algorithm on a single cube
         /// </summary>
-        protected override void March(float x, float y, float z, Color color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<Color> colorList)
+        protected override void March(float x, float y, float z, ColorMode color, float[] cube, IList<Vector3> vertList, IList<int> indexList, IList<ColorMode> colorList)
         {
             int i, j, vertexInACube;
 
@@ -57,7 +57,7 @@ namespace MarchingCubesProject
         /// <summary>
         /// MarchTetrahedron performs the Marching Tetrahedrons algorithm on a single tetrahedron
         /// </summary>
-        private void MarchTetrahedron(IList<Vector3> vertList, IList<int> indexList, Color color, IList<Color> colorList)
+        private void MarchTetrahedron(IList<Vector3> vertList, IList<int> indexList, ColorMode color, IList<ColorMode> colorList)
         {
             int i, j, vert, vert0, vert1, idx;
             int flagIndex = 0, edgeFlags;

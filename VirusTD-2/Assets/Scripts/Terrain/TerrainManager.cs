@@ -36,7 +36,7 @@ public class TerrainManager : MonoBehaviour
                 }
             }
         }
-        //entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(1,0,0)));
+        //entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(0,0,0)));
 
  
 

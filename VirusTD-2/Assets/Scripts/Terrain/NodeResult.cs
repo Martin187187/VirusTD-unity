@@ -5,11 +5,13 @@ using UnityEngine;
 public class NodeResult
 {
     private float height;
-    private Color color;
+    private ColorMode colorMode;
 
-    public NodeResult(float height, Color color){
+
+
+    public NodeResult(float height, ColorMode colorMode){
         this.height = height;
-        this.color = color;
+        this.colorMode = colorMode;
     }
 
 
@@ -18,8 +20,8 @@ public class NodeResult
         return this.height;
     }
 
-    public Color GetColor(){
-        return this.color;
+    public ColorMode GetColor(){
+        return this.colorMode;
     }
 
 }

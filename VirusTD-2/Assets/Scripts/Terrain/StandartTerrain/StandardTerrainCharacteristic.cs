@@ -5,7 +5,7 @@ using UnityEngine;
 public class StandardTerrainCharacteristic : TerrainCharacteristic
 {
 
-    public Color color = new Color(0.6f,0.29f,0);
+    public ColorMode color = ColorMode.ROCK;
     public float middleHeight = 0, min = 2, max = 2;
     public int steps = 4;
     public int offset;

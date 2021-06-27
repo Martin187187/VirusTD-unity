@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StepTerrainCharacteristic : TerrainCharacteristic
 {
-    public Color color = new Color(1,1,1);
+    public ColorMode color = ColorMode.GRASS;
     public float middleHeight = 0, min = 2, max = 2;
     public float curve = 1;
 
@@ -31,8 +31,12 @@ public class StepTerrainCharacteristic : TerrainCharacteristic
         NodeResult floorNodeResult = terrainLevel[floor].GetNodeResult(x,z);
         float secondHeight = floorNodeResult.getHeight()+amplitude*invStep*floor;
 
+        //color
+        
+        float height2 = Mathf.PerlinNoise(x + 34234, z + 723987);
+        ColorMode c = height2>0.6f ? ColorMode.HIGHGRASS : color;
         if(endHeight>= secondHeight)
-            return new NodeResult(endHeight, color);
+            return new NodeResult(endHeight, c);
         else
             return new NodeResult(secondHeight, floorNodeResult.GetColor());
     }
