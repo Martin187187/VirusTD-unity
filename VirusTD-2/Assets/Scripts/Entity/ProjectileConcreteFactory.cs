@@ -14,7 +14,7 @@ public class ProjectileConcreteFactory
         Projectile p = en.AddComponent<Projectile>();
         p.gridSize = 5;
         p.materials = new Material[1];
-        p.materials[0] = Resources.Load("Material", typeof(Material)) as Material;
+        p.materials[0] = Resources.Load("Materials/Material", typeof(Material)) as Material;
         p.velocity = velocity;
         return p;
     }
