@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 using UnityEditor;
@@ -10,10 +9,12 @@ public class Projectile : DynamicMesh
     public void Start() 
     {
         
-        voxels = MeshBuilder.createCubeMesh(gridSize);
+        Tuple<float[], ColorMode[]> result = MeshBuilder.createCubeMesh(gridSize);
+        voxels = result.Item1;
+        colorList = result.Item2;
         
         gameObject.AddComponent<MeshRenderer>();
-        gameObject.GetComponent<Renderer>().material = material;
+        gameObject.GetComponent<Renderer>().materials = materials;
         gameObject.AddComponent<MeshFilter>();
 
 

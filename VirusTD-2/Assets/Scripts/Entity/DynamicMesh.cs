@@ -10,10 +10,11 @@ public enum TextureMode
 public abstract class DynamicMesh : MonoBehaviour
 {
     public int gridSize;
-    public Material material;
+    public Material[] materials;
 
 
     protected float[] voxels;
+    protected ColorMode[] colorList;
 
 
     public void subtractMesh(DynamicMesh meshSubtrahend){
@@ -45,6 +46,7 @@ public abstract class DynamicMesh : MonoBehaviour
                     float substrat = meshSubtrahend.voxels[idx];
                     if(sidx>=0&&sidx <=sidxMax){
                         voxels[sidx] = 1;
+                        colorList[sidx] = ColorMode.ROCK;
                     }
                 }
             }
@@ -53,10 +55,10 @@ public abstract class DynamicMesh : MonoBehaviour
         
     }
 
-    public bool intersect(DynamicMesh subtrahend)
+    public bool intersect(Vector3 pos)
     {
         int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * (gridSize-1) * (gridSize-1);
-        Vector3 positionSubtrahend = subtrahend.transform.localPosition;
+        Vector3 positionSubtrahend = pos;
         Vector3 positionMinuend = transform.localPosition;
 
         Vector3 scale = transform.localScale;
@@ -86,8 +88,9 @@ public abstract class DynamicMesh : MonoBehaviour
         marching.Surface = 0.0f;
         List<Vector3> verts = new List<Vector3>();
         List<int> indices = new List<int>();
+        List<ColorMode> colors = new List<ColorMode>();
         
-        marching.Generate(voxels, gridSize, gridSize, gridSize, verts, indices);
+        marching.Generate(voxels, colorList, gridSize, gridSize, gridSize, verts, indices, colors);
     
         Mesh mesh = new Mesh();
         mesh.SetVertices(verts);
@@ -99,8 +102,7 @@ public abstract class DynamicMesh : MonoBehaviour
         Vector3[] normals = mesh.normals;
         
         Vector2[] uvs = new Vector2[vertices.Length];
-        Color[] colors = new Color[vertices.Length];
-        float max = 0;
+        Color[] colors2 = new Color[vertices.Length];
         for (int i = 0; i < uvs.Length; i++)
         {   
             if(normals[i].x > 0)
@@ -117,18 +119,22 @@ public abstract class DynamicMesh : MonoBehaviour
                 uvs[i] = new Vector2(vertices[i].x, gridSize - 1 - vertices[i].z);
             else
                 uvs[i] = new Vector2(vertices[i].x,vertices[i].y);
+            if(colors[i] == ColorMode.STEEL)
+                colors2[i] = new Color(0.25f, 0, 0);
+            else if(colors[i] == ColorMode.ROCK)
+                colors2[i] = new Color(0, 0, 0);
+            else if(colors[i] == ColorMode.HIGHGRASS&&normals[i].y > 0)
+                colors2[i] = new Color(0.15f, 1, 0);
+            else if(normals[i].y > 0)
+                colors2[i] = new Color(0.15f, 0, 0);
+            else
+                colors2[i] = new Color(0, 0, 0);
+                
 
-
-            
-            colors[i] = new Color(1, 1, 1);
-
-            if(vertices[i].x > max)
-                max = vertices[i].x;
         }
 
-        Debug.Log("max: " + max);
         mesh.uv = uvs;
-        mesh.colors = colors;
+        mesh.colors = colors2;
 
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         if(this is Block){

@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
+using System;
 using UnityEditor;
 
 public class Block : DynamicMesh
@@ -8,21 +8,31 @@ public class Block : DynamicMesh
 
     public void Start(){
 
-        voxels = MeshBuilder.createTerrainMesh(index, gridSize, 0.5f);
-        
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
-        gameObject.GetComponent<Renderer>().material = material;
-        gameObject.AddComponent<MeshCollider>();
+        Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        voxels = results.Item1;
+        colorList = results.Item2;
 
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.AddComponent<MeshCollider>();
         updateMesh();
         
+        gameObject.AddComponent<MeshRenderer>();
+        gameObject.GetComponent<Renderer>().materials = materials;
         
-        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.y + ".asset");
+        
+        //AssetDatabase.CreateAsset(GetComponent<MeshFilter>().mesh, "Assets/Resources/test" + index.x +"-"+ index.y +"-"+ index.z +"-"+ ".asset");
         //AssetDatabase.SaveAssets();
         
         
 
+    }
+
+    public void rebuild(){
+        
+        Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
+        voxels = results.Item1;
+        colorList = results.Item2;
+        updateMesh();
     }
     public void digHole(Vector3Int start, Vector3Int end){
         for (int x = start.x; x < end.x; x++)
@@ -33,13 +43,15 @@ public class Block : DynamicMesh
                     {   
                         int idx = x + y*gridSize+z*gridSize*gridSize;
                         voxels[idx] = -1;
+                        colorList[idx] = ColorMode.STEEL;
                     }
                 }
             }
             updateMesh();
             
     }
- 
+    
+
     
 
 }

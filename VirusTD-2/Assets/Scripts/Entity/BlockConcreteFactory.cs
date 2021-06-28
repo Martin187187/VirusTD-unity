@@ -12,7 +12,9 @@ public class BlockConcreteFactory
             Block b = ob.AddComponent<Block>();
             b.index = new Vector3Int(indexPosition.x,indexPosition.y,indexPosition.z);
             b.gridSize = gridSize;
-            b.material = Resources.Load("Material", typeof(Material)) as Material;
+            b.materials = new Material[2];
+            b.materials[0] = Resources.Load("Material", typeof(Material)) as Material;
+            b.materials[1] = Resources.Load("wheat", typeof(Material)) as Material;
             return b;
         }
 }
