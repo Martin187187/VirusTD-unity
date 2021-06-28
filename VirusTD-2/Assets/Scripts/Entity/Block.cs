@@ -43,14 +43,15 @@ public class Block : DynamicMesh
                     {   
                         int idx = x + y*gridSize+z*gridSize*gridSize;
                         voxels[idx] = -1;
-                        colorList[idx] = ColorMode.ROCK;
+                        colorList[idx] = ColorMode.STEEL;
                     }
                 }
             }
             updateMesh();
             
     }
- 
+    
+
     
 
 }

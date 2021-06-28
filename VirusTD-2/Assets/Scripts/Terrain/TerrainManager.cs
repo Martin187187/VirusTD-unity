@@ -59,7 +59,7 @@ public class TerrainManager : MonoBehaviour
 
                 Block currentBlock = blockArray[position.x, position.y, position.z];
                 
-                if(currentBlock.intersect(p)){
+                if(currentBlock.intersect(p.transform.localPosition)){
                     currentBlock.updateMesh();
                     entityList.Remove(p);
                     Destroy(p.gameObject);
@@ -116,8 +116,19 @@ public class TerrainManager : MonoBehaviour
                     flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
 
                     Singleton.machinegunFactory.ConstructEntity(roundedPosition, new Vector3(0.5f, 0.5f, 0.5f), transform, entityList);
+                } else {
+
+                    Vector3Int blockPos = getBlockPosition(position);
+
+                    Block currentBlock = blockArray[blockPos.x, blockPos.y, blockPos.z];
+                
+                    if(currentBlock.intersect(position)){
+                        currentBlock.updateMesh();
+                        Debug.Log("ehre");
+                    } 
+                
                 }
-            
+
             
             
             
@@ -125,7 +136,7 @@ public class TerrainManager : MonoBehaviour
             
             
             }
-        } 
+        }
         
     }
 

@@ -55,10 +55,10 @@ public abstract class DynamicMesh : MonoBehaviour
         
     }
 
-    public bool intersect(DynamicMesh subtrahend)
+    public bool intersect(Vector3 pos)
     {
         int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * (gridSize-1) * (gridSize-1);
-        Vector3 positionSubtrahend = subtrahend.transform.localPosition;
+        Vector3 positionSubtrahend = pos;
         Vector3 positionMinuend = transform.localPosition;
 
         Vector3 scale = transform.localScale;
@@ -119,8 +119,9 @@ public abstract class DynamicMesh : MonoBehaviour
                 uvs[i] = new Vector2(vertices[i].x, gridSize - 1 - vertices[i].z);
             else
                 uvs[i] = new Vector2(vertices[i].x,vertices[i].y);
-            
-            if(colors[i] == ColorMode.ROCK)
+            if(colors[i] == ColorMode.STEEL)
+                colors2[i] = new Color(0.25f, 0, 0);
+            else if(colors[i] == ColorMode.ROCK)
                 colors2[i] = new Color(0, 0, 0);
             else if(colors[i] == ColorMode.HIGHGRASS&&normals[i].y > 0)
                 colors2[i] = new Color(0.15f, 1, 0);
