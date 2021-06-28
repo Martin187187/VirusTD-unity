@@ -20,6 +20,7 @@ public class CameraScript : MonoBehaviour
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
             
             xRotation -= mouseY;
+            Mathf.Clamp(xRotation, -90f, 90f);
             
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             trackedObject.Rotate(Vector3.up * mouseX); 
