@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEntity
-{
-    string GetName();
+public abstract class Entity : MonoBehaviour{
 
-
+    public TerrainManager world;
 }

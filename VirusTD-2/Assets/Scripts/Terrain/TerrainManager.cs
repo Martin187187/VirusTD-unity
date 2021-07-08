@@ -37,10 +37,6 @@ public class TerrainManager : MonoBehaviour
             }
         }
         //entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(0,0,0)));
-
- 
-
-        
     }
 
     // Update is called once per frame
@@ -214,5 +210,14 @@ public class TerrainManager : MonoBehaviour
     }
     public bool isInBounderies(Vector3Int position){
         return position.x>=0 && position.x < numberOfChunks.x && position.y>=0 && position.y < numberOfChunks.y && position.z>=0 && position.z < numberOfChunks.z;
+    }
+
+    public Block getBlockFromPosition(Vector3 position){
+        Vector3Int b = getBlockPosition(position);
+        return blockArray[b.x, b.y, b.z];
+    }
+
+    public Block getBlockFromIndex(Vector3Int b){
+        return blockArray[b.x, b.y, b.z];
     }
 }
