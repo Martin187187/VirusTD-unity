@@ -102,16 +102,6 @@ public class TerrainManager : MonoBehaviour
                     }
 
 
-                } else if(Input.GetKey(KeyCode.M))
-                {
-                    int xa = ((int)(position.x +0.5f) * (gridSize-1))/(gridSize-1);
-                    int ya = ((int)(position.y +0.5f) * (gridSize-1))/(gridSize-1);
-                    int za = ((int)(position.z +0.5f) * (gridSize-1))/(gridSize-1);
-
-                    Vector3Int roundedPosition = new Vector3Int(xa, ya, za);
-                    flatTerrain(roundedPosition - new Vector3Int(2,0,2), roundedPosition + new Vector3Int(2,0,2));
-
-                    Singleton.machinegunFactory.ConstructEntity(roundedPosition, new Vector3(0.5f, 0.5f, 0.5f), transform, entityList);
                 } else {
 
                     Vector3Int blockPos = getBlockPosition(position);
