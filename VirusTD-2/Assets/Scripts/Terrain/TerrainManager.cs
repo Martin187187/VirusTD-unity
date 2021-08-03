@@ -191,12 +191,32 @@ public class TerrainManager : MonoBehaviour
     }
 
     public Vector3Int getBlockPosition(Vector3 position){
-        float part = (float)1/chunkLength;
         int x = (int)(position.x / chunkLength);
         int y = (int)(position.y / chunkLength);
         int z = (int)(position.z / chunkLength);
 
         return new Vector3Int(x,y,z);
+    }
+
+    public List<Block> getAllIntersectingBlockPosition(Vector3 position){
+        List<Vector3Int> blockPositionList = new List<Vector3Int>();
+        for(int i = 0; i < 2; i++){
+            for(int j = 0; j < 2; j++){
+                for(int k = 0; k < 2; k++){
+                    int x = (int)((position.x-i) / chunkLength);
+                    int y = (int)((position.y-j) / chunkLength);
+                    int z = (int)((position.z-k) / chunkLength);
+
+                    Vector3Int b = new Vector3Int(x,y,z);
+                    if(!blockPositionList.Contains(b))
+                        blockPositionList.Add(b);
+                }
+            }
+        }
+        List<Block> blockList = new List<Block>();
+        foreach(Vector3Int vec in blockPositionList)
+            blockList.Add(getBlockFromIndex(vec));
+        return blockList;
     }
     public bool isInBounderies(Vector3Int position){
         return position.x>=0 && position.x < numberOfChunks.x && position.y>=0 && position.y < numberOfChunks.y && position.z>=0 && position.z < numberOfChunks.z;

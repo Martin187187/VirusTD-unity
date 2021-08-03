@@ -74,6 +74,7 @@ public abstract class DynamicMesh : MonoBehaviour
         int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
         if(sidx>=0&&sidx <= sidxMax){
             if(voxels[sidx]<1){
+                Debug.Log("destroy");
                 voxels[sidx] = 1;
                 return true;
             }
