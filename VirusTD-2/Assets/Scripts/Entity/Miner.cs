@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Miner : Entity
 {
-    public float shootFrequenz = 1f;
+    public float shootFrequenz = 5f;
     private float rotX = 0;
     private float rotY = 0;
     
@@ -19,8 +19,10 @@ public class Miner : Entity
     // Update is called once per frame
     void Update()
     {   
+        //bool doshoot = Input.GetKeyDown(KeyCode.P);
+        bool doshoot = timer/shootFrequenz>1;
 
-        if(timer/shootFrequenz>1){
+        if(doshoot){
             //rdm direction
             rotX = Random.Range(-70, -0);
             rotY = Random.Range(-20, 20);
@@ -31,13 +33,14 @@ public class Miner : Entity
         Transform laser = arm.GetChild(0);
 
         Quaternion newRotArm = Quaternion.Euler(0,rotY,0);
-        arm.localRotation = Quaternion.Slerp(arm.rotation, newRotArm,  Time.deltaTime * 5);
+        arm.localRotation = Quaternion.Slerp(arm.localRotation, newRotArm,  Time.deltaTime * 5);
 
         Quaternion newRotLaser = Quaternion.Euler(rotX, 0, 0);
         laser.localRotation = Quaternion.Slerp(laser.localRotation, newRotLaser,  Time.deltaTime * 5);
 
-        if(timer/shootFrequenz>1){
+        if(doshoot){
             Debug.Log("shoot at: " +laser.rotation * Vector3.down);
+            Debug.DrawRay(laser.position, (laser.rotation  * Vector3.down)*100, Color.green, shootFrequenz, false);
             if(world!=null)
                 shoot(laser.position, laser.rotation * Vector3.down);
             timer = 0;
@@ -48,24 +51,14 @@ public class Miner : Entity
 
     public void shoot(Vector3 position, Vector3 direction){
         Vector3 pos = new Vector3(position.x, position.y, position.z);
-        List<Block> blockList = world.getAllIntersectingBlockPosition(pos);
+        Block block = world.getBlockFromPosition(pos);
         int i = 0;
-        while(!doIntersect(blockList, pos)&&i<100){
-            pos+=direction;
+        while(!block.intersect(pos)&&i<100){
+            pos+=(direction*0.2f);
             i++;
-            blockList = world.getAllIntersectingBlockPosition(pos);
+            block = world.getBlockFromPosition(pos);
         }
-    }
-    private bool doIntersect(List<Block> blocks, Vector3 pos){
-        bool inter = false;
-        foreach(Block block in blocks){
-            bool current = block.intersect(pos);
-            inter |= current;
-
-            if(current)
-                block.updateMesh();
-        }
-        return inter;
+        block.updateMesh();
     }
 
 

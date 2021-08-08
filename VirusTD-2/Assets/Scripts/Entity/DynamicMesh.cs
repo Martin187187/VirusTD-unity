@@ -57,7 +57,7 @@ public abstract class DynamicMesh : MonoBehaviour
 
     public bool intersect(Vector3 pos)
     {
-        int sidxMax = (gridSize-1) + (gridSize-1) * gridSize + (gridSize-1) * (gridSize-1) * (gridSize-1);
+        int sidxMax = gridSize + gridSize * gridSize + gridSize * gridSize * gridSize;
         Vector3 positionSubtrahend = pos;
         Vector3 positionMinuend = transform.localPosition;
 
@@ -74,12 +74,19 @@ public abstract class DynamicMesh : MonoBehaviour
         int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
         if(sidx>=0&&sidx <= sidxMax){
             if(voxels[sidx]<1){
-                Debug.Log("destroy");
+                
+                Debug.Log("accepted sidx: "+ sidx +", sidxMax: " + sidxMax);
                 voxels[sidx] = 1;
                 return true;
-            }
+            } 
+            Debug.Log("lelele sidx: "+ voxels[sidx]);
             
         }
+        //GameObject gay = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //gay.transform.position = pos;
+        //gay.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        Debug.Log("??? sidx: "+ sidx +", sidxMax: " + sidxMax);
+        
         return false;
     }
     public void updateMesh()
