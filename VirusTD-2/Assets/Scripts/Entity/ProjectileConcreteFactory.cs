@@ -5,18 +5,42 @@ using UnityEngine;
 public class ProjectileConcreteFactory 
 {
     
-    public Projectile ConstructEntity(Vector3 position, Vector3 scale, Transform transform, int gridSize, Vector3 velocity){
+    public static Projectile ConstructEntity(Vector3 position, Vector3 scale, Transform transform, int gridSize, Vector3 velocity){
         GameObject en = new GameObject("Projectile");
 
         en.transform.localPosition = position;
         en.transform.localScale = scale;
         en.transform.parent = transform;
         Projectile p = en.AddComponent<Projectile>();
-        p.gridSize = 5;
+        p.gridSize = gridSize;
         p.materials = new Material[1];
         p.materials[0] = Resources.Load("Materials/Material", typeof(Material)) as Material;
         p.velocity = velocity;
         return p;
+    }
+
+    public static Enemy ConstructEnemy(Vector3 position, Transform transform, TerrainManager world, Entity target){
+        GameObject en = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        en.name = "Enemy";
+
+        en.transform.localPosition = position;
+        en.transform.parent = transform;
+        en.GetComponent<MeshRenderer>().material.color = Color.red;
+        Enemy enemy = en.AddComponent<Enemy>();
+        enemy.world = world;
+        enemy.goal = target;
+        return enemy;
+    }
+
+    public static Turret ConstructTarget(Vector3 position, Transform transform, TerrainManager world){
+        GameObject en = GameObject.Instantiate(Resources.Load<GameObject>("Assets/gun"), position , Quaternion.identity);
+        en.name = "Turret";
+        en.transform.parent = transform;
+        en.GetComponent<MeshRenderer>().material.color = Color.blue  ;
+
+        Turret target = en.AddComponent<Turret>();
+        target.world = world;
+        return target;
     }
 
 }

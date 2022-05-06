@@ -5,8 +5,8 @@ using System;
 
 public class TerrainManager : MonoBehaviour
 {
-    
-    List<Projectile> entityList;
+
+    public List<Projectile> entityList;
     Block[,,] blockArray;
     public Vector3Int numberOfChunks = new Vector3Int(1, 2, 1);
     public int chunkLength = 8;
@@ -17,8 +17,14 @@ public class TerrainManager : MonoBehaviour
 
     private Vector3 savedPosition;
     private bool isSaved = false;
+    public Turret turret;
+    public Enemy enemy;
+
+    public List<Enemy> enemyList = new List<Enemy>();
+    public List<Turret> turretList = new List<Turret>();
     void Start()
     {
+        Application.targetFrameRate = 144;
         entityList = new List<Projectile>();
         MeshBuilder.init(characteristic);
 
@@ -32,16 +38,18 @@ public class TerrainManager : MonoBehaviour
             {
                 for (int z = 0; z < numberOfChunks.z; z++)
                 {
-                    blockArray[x, y, z] = Singleton.blockFactory.ConstructEntity(new Vector3Int(x,y,z), terrain.transform, chunkLength, gridSize);
+                    blockArray[x, y, z] = Singleton.blockFactory.ConstructEntity(new Vector3Int(x, y, z), terrain.transform, chunkLength, gridSize);
                 }
             }
         }
-        //entityList.Add(Singleton.projectileFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(0,0,0)));
+        entityList.Add(ProjectileConcreteFactory.ConstructEntity(new Vector3(4,40,4), new Vector3(1/4f, 1/4f, 1/4f), transform, 5, new Vector3(0,-0.1f,0)));
+        
     }
-
     // Update is called once per frame
     void Update()
     {
+        if(turret==null)
+            turret = ProjectileConcreteFactory.ConstructTarget(new Vector3( 30,calculateHeight(60,60)/2, 30), transform, this);
         for (int i = 0; i < entityList.Count; i++)
         {
             Projectile p = entityList[i];
@@ -52,20 +60,21 @@ public class TerrainManager : MonoBehaviour
             //updates if it hit any terrain
             if (isInBounderies(position))
             {
-
-                Block currentBlock = blockArray[position.x, position.y, position.z];
                 
-                if(currentBlock.intersect(p.transform.localPosition)){
+                Block currentBlock = blockArray[position.x, position.y, position.z];
+
+                if (currentBlock.intersect(p.transform.localPosition))
+                {
                     currentBlock.updateMesh();
                     entityList.Remove(p);
                     Destroy(p.gameObject);
-                    Debug.Log("destroy");
-                } 
-                
-            } else if(p.transform.localPosition.magnitude>1000){
-                    entityList.Remove(p);
-                    Destroy(p.gameObject);
-                    Debug.Log("destroy2");
+                }
+
+            }
+            else if (p.transform.localPosition.magnitude > 100)
+            {
+                entityList.Remove(p);
+                Destroy(p.gameObject);
             }
         }
 
@@ -77,10 +86,11 @@ public class TerrainManager : MonoBehaviour
 
             if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
             {
-                    Vector3 position = hit.point;
-                
-                
-                if (Input.GetKey(KeyCode.LeftShift)) { 
+                Vector3 position = hit.point;
+
+
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
                     //terrain hit
 
                     if (isInBounderies(getBlockPosition(position)))
@@ -102,31 +112,51 @@ public class TerrainManager : MonoBehaviour
                     }
 
 
-                } else {
-
-                    Vector3Int blockPos = getBlockPosition(position);
-
-                    Block currentBlock = blockArray[blockPos.x, blockPos.y, blockPos.z];
-                
-                    if(currentBlock.intersect(position)){
-                        currentBlock.updateMesh();
-                        Debug.Log("ehre");
-                    } 
-                
+                }
+                else
+                {
+                //enemy = ProjectileConcreteFactory.ConstructEnemy(position, transform, this, turret);
+                    /*
+                    Vector3 movedPosition = position + castPoint.direction * chunkLength / gridSize / 2;
+                    ExplosionConcreteFactory.ConstructExplosion(movedPosition, transform, this);
+                    List<Block> blockList = getAllBlocksFromPosition(movedPosition);
+                    foreach (Block block in blockList)
+                    {
+                        block.intersect(movedPosition);
+                        block.updateMesh();
+                    }
+                    */
+                    Turret turtle = ProjectileConcreteFactory.ConstructTarget(position, transform, this);
+                    turretList.Add(turret);
                 }
 
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
             }
         }
-        
-    }
 
-    public void reloadTerrain(){
+    }
+    public int calculateHeight(int x, int z){
+        
+
+        return blockArray[x/(gridSize-1), 0, z/(gridSize-1)].heightMap[x%(gridSize-1),z%(gridSize-1)];
+    }
+    public Vector3 getHeight(Vector3 position)
+    {
+        Ray castPoint = new Ray(new Vector3(position.x, 100, position.z), new Vector3(0, -1, 0));
+        RaycastHit hit;
+        if (Physics.Raycast(castPoint, out hit, Mathf.Infinity, 1 << 3))
+        {
+            return hit.point;
+        }
+        return new Vector3(position.x, 0, position.z);
+    }
+    public void reloadTerrain()
+    {
         for (int x = 0; x < numberOfChunks.x; x++)
         {
             for (int y = 0; y < numberOfChunks.y; y++)
@@ -140,8 +170,9 @@ public class TerrainManager : MonoBehaviour
         }
     }
 
-    public void flatTerrain(Vector3 first, Vector3 second){
-        
+    public void flatTerrain(Vector3 first, Vector3 second)
+    {
+
         Vector3Int savedBlockPosition = getBlockPosition(first);
         Vector3Int blockPosition = getBlockPosition(second);
         int startX = (int)Mathf.Min(savedBlockPosition.x, blockPosition.x);
@@ -190,24 +221,156 @@ public class TerrainManager : MonoBehaviour
         }
     }
 
-    public Vector3Int getBlockPosition(Vector3 position){
-        float part = (float)1/chunkLength;
+    public Vector3Int getIndexPosition(Vector3 position)
+    {
+        
+        int x = Mathf.RoundToInt(position.x - position.x%((float)1/(gridSize-1)));
+        int y = Mathf.RoundToInt(position.y - position.y%((float)1/(gridSize-1)));
+        int z = Mathf.RoundToInt(position.z - position.z%((float)1/(gridSize-1)));
+
+        return new Vector3Int(x,y,z);
+    }
+
+    public bool isInWorld(Vector3 position){
+        int x = Mathf.RoundToInt(position.x - position.x%((float)1/(gridSize-1)));
+        int y = Mathf.RoundToInt(position.y - position.y%((float)1/(gridSize-1)));
+        int z = Mathf.RoundToInt(position.z - position.z%((float)1/(gridSize-1)));
+
+        return !(x<0 || y<0 || z<0 || x >= (gridSize-1)*numberOfChunks.x || y >= (gridSize-1)*numberOfChunks.y || z >= (gridSize-1)*numberOfChunks.z);
+    }
+    public Vector3Int getBlockPosition(Vector3 position)
+    {
         int x = (int)(position.x / chunkLength);
         int y = (int)(position.y / chunkLength);
         int z = (int)(position.z / chunkLength);
 
-        return new Vector3Int(x,y,z);
-    }
-    public bool isInBounderies(Vector3Int position){
-        return position.x>=0 && position.x < numberOfChunks.x && position.y>=0 && position.y < numberOfChunks.y && position.z>=0 && position.z < numberOfChunks.z;
+        return new Vector3Int(x, y, z);
     }
 
-    public Block getBlockFromPosition(Vector3 position){
+    public List<Block> getAllIntersectingBlockPosition(Vector3 position)
+    {
+        List<Vector3Int> blockPositionList = new List<Vector3Int>();
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    int x = (int)((position.x - i) / chunkLength);
+                    int y = (int)((position.y - j) / chunkLength);
+                    int z = (int)((position.z - k) / chunkLength);
+
+                    Vector3Int b = new Vector3Int(x, y, z);
+                    if (!blockPositionList.Contains(b))
+                        blockPositionList.Add(b);
+                }
+            }
+        }
+        List<Block> blockList = new List<Block>();
+        foreach (Vector3Int vec in blockPositionList)
+            blockList.Add(getBlockFromIndex(vec));
+        return blockList;
+    }
+    public bool isInBounderies(Vector3Int position)
+    {
+        return position.x >= 0 && position.x < numberOfChunks.x && position.y >= 0 && position.y < numberOfChunks.y && position.z >= 0 && position.z < numberOfChunks.z;
+    }
+
+    public Block getBlockFromPosition(Vector3 position)
+    {
         Vector3Int b = getBlockPosition(position);
         return blockArray[b.x, b.y, b.z];
     }
 
-    public Block getBlockFromIndex(Vector3Int b){
+    public Block getBlockFromIndex(Vector3Int b)
+    {
         return blockArray[b.x, b.y, b.z];
+    }
+
+    public float getScale()
+    {
+        return 1f * chunkLength / (gridSize - 1);
+    }
+
+    public List<Block> getAllBlocksFromPosition(Vector3 position)
+    {
+
+        Vector3Int blockPosition = getBlockPosition(position);
+        List<Block> blockList = new List<Block>();
+
+        float x = (position / chunkLength).x % 1 * (gridSize - 1);
+        float y = (position / chunkLength).y % 1 * (gridSize - 1);
+        float z = (position / chunkLength).z % 1 * (gridSize - 1);
+        bool isxBorder = x < 1;
+        bool isyBorder = y < 1;
+        bool iszBorder = z < 1;
+        bool isxborderR = x > (gridSize - 2);
+        bool isyborderR = y > (gridSize - 2);
+        bool iszborderR = z > (gridSize - 2);
+
+        Debug.Log("xborder: " + (position / chunkLength).x);
+        blockList.Add(getBlockFromIndex(blockPosition));
+        if (isxBorder)
+        {
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), blockPosition.y, blockPosition.z)));
+        }
+        if (isyBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Max(0, blockPosition.y - 1), blockPosition.z)));
+        if (iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, blockPosition.y, Mathf.Max(0, blockPosition.z - 1))));
+
+        if (isxBorder && isyBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Max(0, blockPosition.y - 1), blockPosition.z)));
+        if (iszBorder && isyBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Max(0, blockPosition.y - 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxborderR && isyBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Max(0, blockPosition.y - 1), blockPosition.z)));
+        if (iszborderR && isyBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Max(0, blockPosition.y - 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+
+        if (isxBorder && isyBorder && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Max(0, blockPosition.y - 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxborderR && isyBorder && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Max(0, blockPosition.y - 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxBorder && isyBorder && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Max(0, blockPosition.y - 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+        if (isxborderR && isyBorder && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Max(0, blockPosition.y - 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+
+        if (isxborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), blockPosition.y, blockPosition.z)));
+        if (isyborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), blockPosition.z)));
+        if (iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, blockPosition.y, Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+        if (isxBorder && isyborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), blockPosition.z)));
+        if (iszBorder && isyborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxborderR && isyborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), blockPosition.z)));
+        if (iszborderR && isyborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(blockPosition.x, Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+
+        if (isxBorder && isyborderR && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxborderR && isyborderR && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Max(0, blockPosition.z - 1))));
+        if (isxBorder && isyborderR && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+        if (isxborderR && isyborderR && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), Mathf.Min(numberOfChunks.y - 1, blockPosition.y + 1), Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+
+        if (isxBorder && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), blockPosition.y, Mathf.Max(0, blockPosition.z - 1))));
+        if (isxborderR && iszBorder)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), blockPosition.y, Mathf.Max(0, blockPosition.z - 1))));
+        if (isxBorder && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Max(0, blockPosition.x - 1), blockPosition.y, Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+        if (isxborderR && iszborderR)
+            blockList.Add(getBlockFromIndex(new Vector3Int(Mathf.Min(numberOfChunks.x - 1, blockPosition.x + 1), blockPosition.y, Mathf.Min(numberOfChunks.z - 1, blockPosition.z + 1))));
+        /*
+        */
+        return blockList;
     }
 }

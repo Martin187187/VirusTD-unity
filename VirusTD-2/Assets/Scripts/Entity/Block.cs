@@ -5,18 +5,18 @@ using UnityEditor;
 public class Block : DynamicMesh
 {
     public Vector3Int index;
-
+    public int[,] heightMap;
     public void Start(){
 
         Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
         voxels = results.Item1;
         colorList = results.Item2;
-
+        gameObject.layer = 3;
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshCollider>();
         updateMesh();
         
-        gameObject.AddComponent<MeshRenderer>();
+        MeshRenderer renderer=  gameObject.AddComponent<MeshRenderer>();
         gameObject.GetComponent<Renderer>().materials = materials;
         
         
@@ -25,6 +25,9 @@ public class Block : DynamicMesh
         
         
 
+    }
+
+    public void Update() {
     }
 
     public void rebuild(){
@@ -49,6 +52,29 @@ public class Block : DynamicMesh
             }
             updateMesh();
             
+    }
+
+    public override void specificUpdate(){
+            calculateHeightMap();
+    }
+
+    public void calculateHeightMap(){
+        int[,] result = new int[gridSize, gridSize];
+        for (int x = 0; x < gridSize; x++)
+            {  
+                for (int z = 0; z < gridSize; z++)
+                { 
+                    for (int y = gridSize-1 ;y >= 0; y--)
+                    {   
+                        int idx = x + y*gridSize+z*gridSize*gridSize;
+                        if(voxels[idx]<0){
+                            result[x,z] = y;
+                            break;
+                        }
+                    }
+                }
+            }
+        heightMap = result;
     }
     
 
