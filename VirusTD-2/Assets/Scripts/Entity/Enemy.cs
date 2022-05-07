@@ -24,29 +24,31 @@ public class Enemy : Entity
     {
         hp -= 40;
         if (hp < 0)
+        {
+
             delete();
+            world.gold++;
+        }
         Projectile projectile = col.gameObject.GetComponent<Projectile>();
-        world.entityList.Remove(projectile);
-        Destroy(projectile);
-        Destroy(col.gameObject);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(threadStart && goal != null){
+        if (threadStart && goal != null)
+        {
             threadStart = false;
             Thread thread = new Thread(Pathfinding.calculatePath);
             input = new Pathfinding.Input(world.getIndexPosition(transform.position), world.getIndexPosition(goal.transform.position), world, new List<Vector3>());
             thread.Start(input);
-        } 
-        if (input !=null && input.finished && time)
+        }
+        if (input != null && input.finished && time)
         {
             foreach (Vector3 item in input.result)
-        {
-            path.Add(item);
-            time = false;
-        }
+            {
+                path.Add(item);
+                time = false;
+            }
 
         }
 
@@ -72,7 +74,10 @@ public class Enemy : Entity
             }
         }
         if (!time && path.Count == 0)
+        {
+            world.turret.hp -= 100;
             delete();
+        }
 
 
 

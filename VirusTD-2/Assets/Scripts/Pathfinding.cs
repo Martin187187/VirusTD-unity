@@ -58,37 +58,38 @@ public class Pathfinding
 
                 visted.Add(current);
                 List<Vector3Int> newNodes = current.getNodesToVisit();
+                int n = (world.gridSize-1)/world.chunkLength;
                 foreach (Vector3Int position in newNodes)
                 {
-                    if (world.isInWorld(new Vector3Int(position.x * 2, position.y * 2, position.z * 2)) &&
-                    world.isInWorld(new Vector3Int(position.x * 2 + 2, position.y * 2, position.z * 2 - 2)) &&
-                    world.isInWorld(new Vector3Int(position.x * 2 + 2, position.y * 2, position.z * 2 + 2)) &&
-                    world.isInWorld(new Vector3Int(position.x * 2 - 2, position.y * 2, position.z * 2 + 2)) &&
-                    world.isInWorld(new Vector3Int(position.x * 2 - 2, position.y * 2, position.z * 2 - 2))&&
-                    world.isInWorld(new Vector3Int(position.x * 2 + 2, position.y * 2, position.z * 2 )) &&
-                    world.isInWorld(new Vector3Int(position.x * 2 - 2, position.y * 2, position.z * 2 )) &&
-                    world.isInWorld(new Vector3Int(position.x * 2, position.y * 2, position.z * 2 + 2)) &&
-                    world.isInWorld(new Vector3Int(position.x * 2, position.y * 2, position.z * 2 - 2)))
+                    if (world.isInWorld(new Vector3Int(position.x* n, position.y* n, position.z* n)) &&
+                    world.isInWorld(new Vector3Int(position.x* n + 2, position.y* n, position.z* n - 2)) &&
+                    world.isInWorld(new Vector3Int(position.x* n + 2, position.y* n, position.z* n + 2)) &&
+                    world.isInWorld(new Vector3Int(position.x* n - 2, position.y* n, position.z* n + 2)) &&
+                    world.isInWorld(new Vector3Int(position.x* n - 2, position.y* n, position.z* n - 2))&&
+                    world.isInWorld(new Vector3Int(position.x* n + 2, position.y* n, position.z* n )) &&
+                    world.isInWorld(new Vector3Int(position.x* n - 2, position.y* n, position.z* n )) &&
+                    world.isInWorld(new Vector3Int(position.x* n, position.y* n, position.z* n + 2)) &&
+                    world.isInWorld(new Vector3Int(position.x* n, position.y* n, position.z* n - 2)))
                     {
-                        int height = world.calculateHeight(position.x * 2, position.z * 2);
+                        int height = world.calculateHeight(position.x* n, position.z* n);
                         int value = (int)Math.Pow(Math.Abs(current.position.y - height) * scale, 3) + 1;
 
-                        int height1 = world.calculateHeight(position.x * 2 + 2, position.z * 2 - 2);
+                        int height1 = world.calculateHeight(position.x* n + 2, position.z* n - 2);
                         int value1 = (int)Math.Pow(Math.Abs(current.position.y - height1) * scale, 1) + 1;
-                        int height2 = world.calculateHeight(position.x * 2 + 2, position.z * 2 + 2);
+                        int height2 = world.calculateHeight(position.x* n + 2, position.z* n + 2);
                         int value2 = (int)Math.Pow(Math.Abs(current.position.y - height2) * scale, 1) + 1;
-                        int height3 = world.calculateHeight(position.x * 2 - 2, position.z * 2 + 2);
+                        int height3 = world.calculateHeight(position.x* n - 2, position.z* n + 2);
                         int value3 = (int)Math.Pow(Math.Abs(current.position.y - height3) * scale, 1) + 1;
-                        int height4 = world.calculateHeight(position.x * 2 - 2, position.z * 2 - 2);
+                        int height4 = world.calculateHeight(position.x* n - 2, position.z* n - 2);
                         int value4 = (int)Math.Pow(Math.Abs(current.position.y - height4) * scale, 1) + 1;
                         
-                        int height5 = world.calculateHeight(position.x * 2 + 2, position.z * 2 - 2);
+                        int height5 = world.calculateHeight(position.x* n + 2, position.z* n - 2);
                         int value5 = (int)Math.Pow(Math.Abs(current.position.y - height5) * scale, 1) + 1;
-                        int height6 = world.calculateHeight(position.x * 2 + 2, position.z * 2 + 2);
+                        int height6 = world.calculateHeight(position.x* n + 2, position.z* n + 2);
                         int value6 = (int)Math.Pow(Math.Abs(current.position.y - height6) * scale, 1) + 1;
-                        int height7 = world.calculateHeight(position.x * 2 - 2, position.z * 2 + 2);
+                        int height7 = world.calculateHeight(position.x* n - 2, position.z* n + 2);
                         int value7 = (int)Math.Pow(Math.Abs(current.position.y - height7) * scale, 1) + 1;
-                        int height8 = world.calculateHeight(position.x * 2 - 2, position.z * 2 - 2);
+                        int height8 = world.calculateHeight(position.x* n - 2, position.z* n - 2);
                         int value8 = (int)Math.Pow(Math.Abs(current.position.y - height8) * scale, 1) + 1;
                         NodeResult newNodeResult = new NodeResult(new Vector3Int(position.x, height, position.z), current);
                         needToVisit.Add(currentValue + (value + value1 + value2 + value3 + value4+ value5 + value6 + value7 + value8) / 9, newNodeResult);

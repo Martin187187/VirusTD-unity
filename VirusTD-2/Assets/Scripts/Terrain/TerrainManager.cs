@@ -17,11 +17,15 @@ public class TerrainManager : MonoBehaviour
 
     private Vector3 savedPosition;
     private bool isSaved = false;
-    public Turret turret;
+    public Base turret;
     public Enemy enemy;
 
     public List<Enemy> enemyList = new List<Enemy>();
     public List<Turret> turretList = new List<Turret>();
+    public int gold = 100;
+
+    public bool running = false;
+    public int waveCounter = 1;
     void Start()
     {
         Application.targetFrameRate = 144;
@@ -49,7 +53,7 @@ public class TerrainManager : MonoBehaviour
     void Update()
     {
         if(turret==null)
-            turret = ProjectileConcreteFactory.ConstructTarget(new Vector3( 30,calculateHeight(60,60)/2, 30), transform, this);
+            turret = ProjectileConcreteFactory.ConstructBase(getHeight(new Vector3(64,0,64)), transform, this);
         for (int i = 0; i < entityList.Count; i++)
         {
             Projectile p = entityList[i];
@@ -106,7 +110,12 @@ public class TerrainManager : MonoBehaviour
                         else
                         {
                             Debug.Log("dig Hole");
-                            flatTerrain(savedPosition, position);
+                            Vector3 distance = savedPosition - position;
+                            float cost = Mathf.Sqrt(Mathf.Pow(distance.x,2)+ Mathf.Pow(Mathf.Max(savedPosition.y, position.y),2) + Mathf.Pow(distance.z,2));
+                            if(gold>=cost){
+                                flatTerrain(savedPosition, position);
+                                gold-=(int)cost;
+                            }
                             isSaved = false;
                         }
                     }
@@ -126,8 +135,11 @@ public class TerrainManager : MonoBehaviour
                         block.updateMesh();
                     }
                     */
-                    Turret turtle = ProjectileConcreteFactory.ConstructTarget(position, transform, this);
-                    turretList.Add(turret);
+                    if(gold>=20){
+                        Turret turtle = ProjectileConcreteFactory.ConstructTarget(position, transform, this);
+                        turretList.Add(turtle);
+                        gold-=20;
+                    }
                 }
 
 

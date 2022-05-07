@@ -18,7 +18,7 @@ public class Turret : Entity
         if (target == null)
         {
             Entity nearestEnemy = null;
-            float distance = float.MaxValue;
+            float distance = 20;
             foreach (Enemy enemy in world.enemyList)
             {
                 float value = Vector3.Distance(enemy.transform.position, transform.position);
@@ -65,6 +65,8 @@ public class Turret : Entity
 
                 if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
                 {
+
+                    Vector3 hitPosition = hit.point;
                     if (hit.collider.gameObject.layer != 3)
                     {
                         Projectile newProjectile = ProjectileConcreteFactory.ConstructEntity(projectilePosition, Vector3.one * 0.25f, world.transform, 3, direction * 4.0f);
