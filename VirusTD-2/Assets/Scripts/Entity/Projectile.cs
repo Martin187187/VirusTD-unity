@@ -6,6 +6,8 @@ using MarchingCubesProject;
 public class Projectile : DynamicMesh
 {
     public Vector3 velocity;
+
+    public Vector3 startPosition;
     public void Start()
     {
 
@@ -20,6 +22,7 @@ public class Projectile : DynamicMesh
         Rigidbody rigidbody = gameObject.AddComponent<Rigidbody>();
         boxCollider.isTrigger = true;
         rigidbody.isKinematic = true;
+        startPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         updateMesh();
 
@@ -27,6 +30,9 @@ public class Projectile : DynamicMesh
         //AssetDatabase.SaveAssets();
     }
 
+    public bool DidTravelLongEnough(){
+        return Vector3.Distance(startPosition, transform.position)> 4;
+    }
 
     public override void specificUpdate()
     {

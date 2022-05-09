@@ -7,12 +7,11 @@ using UnityEngine;
 public class Pathfinding
 {
 
-    private static int scale = 4;
     public static void calculatePath(object obj)
     {
         Input input = obj as Input;
 
-        List<Vector3Int> result = shortestPath(input.start, input.goal, input.world);
+        List<Vector3Int> result = shortestPath(input.start, input.goal, input.world, input.scale);
 
         Debug.Log("finished" + result.Count);
         List<Vector3> rawPath = new List<Vector3>();
@@ -30,7 +29,7 @@ public class Pathfinding
     }
 
 
-    private static List<Vector3Int> shortestPath(Vector3Int start, Vector3Int goal, TerrainManager world)
+    private static List<Vector3Int> shortestPath(Vector3Int start, Vector3Int goal, TerrainManager world, float scale)
     {
 
         SortedList<int, NodeResult> needToVisit = new SortedList<int, NodeResult>(new DuplicateKeyComparer<int>());
@@ -72,25 +71,25 @@ public class Pathfinding
                     world.isInWorld(new Vector3Int(position.x* n, position.y* n, position.z* n - 2)))
                     {
                         int height = world.calculateHeight(position.x* n, position.z* n);
-                        int value = (int)Math.Pow(Math.Abs(current.position.y - height) * scale, 3) + 1;
+                        int value = (int)Math.Pow(Math.Abs(current.position.y - height)*scale, scale) + 1;
 
                         int height1 = world.calculateHeight(position.x* n + 2, position.z* n - 2);
-                        int value1 = (int)Math.Pow(Math.Abs(current.position.y - height1) * scale, 1) + 1;
+                        int value1 = (int)Math.Pow(Math.Abs(current.position.y - height1) *scale, 1) + 1;
                         int height2 = world.calculateHeight(position.x* n + 2, position.z* n + 2);
-                        int value2 = (int)Math.Pow(Math.Abs(current.position.y - height2) * scale, 1) + 1;
+                        int value2 = (int)Math.Pow(Math.Abs(current.position.y - height2) *scale, 1) + 1;
                         int height3 = world.calculateHeight(position.x* n - 2, position.z* n + 2);
-                        int value3 = (int)Math.Pow(Math.Abs(current.position.y - height3) * scale, 1) + 1;
+                        int value3 = (int)Math.Pow(Math.Abs(current.position.y - height3) *scale, 1) + 1;
                         int height4 = world.calculateHeight(position.x* n - 2, position.z* n - 2);
-                        int value4 = (int)Math.Pow(Math.Abs(current.position.y - height4) * scale, 1) + 1;
+                        int value4 = (int)Math.Pow(Math.Abs(current.position.y - height4) *scale, 1) + 1;
                         
                         int height5 = world.calculateHeight(position.x* n + 2, position.z* n - 2);
-                        int value5 = (int)Math.Pow(Math.Abs(current.position.y - height5) * scale, 1) + 1;
+                        int value5 = (int)Math.Pow(Math.Abs(current.position.y - height5) *scale, 1) + 1;
                         int height6 = world.calculateHeight(position.x* n + 2, position.z* n + 2);
-                        int value6 = (int)Math.Pow(Math.Abs(current.position.y - height6) * scale, 1) + 1;
+                        int value6 = (int)Math.Pow(Math.Abs(current.position.y - height6) *scale, 1) + 1;
                         int height7 = world.calculateHeight(position.x* n - 2, position.z* n + 2);
-                        int value7 = (int)Math.Pow(Math.Abs(current.position.y - height7) * scale, 1) + 1;
+                        int value7 = (int)Math.Pow(Math.Abs(current.position.y - height7) *scale, 1) + 1;
                         int height8 = world.calculateHeight(position.x* n - 2, position.z* n - 2);
-                        int value8 = (int)Math.Pow(Math.Abs(current.position.y - height8) * scale, 1) + 1;
+                        int value8 = (int)Math.Pow(Math.Abs(current.position.y - height8) *scale, 1) + 1;
                         NodeResult newNodeResult = new NodeResult(new Vector3Int(position.x, height, position.z), current);
                         needToVisit.Add(currentValue + (value + value1 + value2 + value3 + value4+ value5 + value6 + value7 + value8) / 9, newNodeResult);
                     }
@@ -106,11 +105,13 @@ public class Pathfinding
         public TerrainManager world;
         public List<Vector3> result;
         public Boolean finished;
-        public Input(Vector3Int start, Vector3Int goal, TerrainManager world, List<Vector3> result)
+        public float scale;
+        public Input(Vector3Int start, Vector3Int goal, TerrainManager world, float scale, List<Vector3> result)
         {
             this.start = start;
             this.goal = goal;
             this.world = world;
+            this.scale = scale;
             this.result = result;
             this.finished = false;
         }

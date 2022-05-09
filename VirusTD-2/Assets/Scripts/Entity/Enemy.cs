@@ -4,22 +4,21 @@ using UnityEngine;
 using System;
 using System.Threading;
 
-public class Enemy : Entity
+public abstract class Enemy : Entity
 {
-    bool time = true;
-    bool threadStart = true;
+    protected bool time = true;
+    protected bool threadStart = true;
     public Entity goal;
-    float timer;
+    protected float timer;
     public float hp = 100;
 
-    private Pathfinding.Input input;
-    private List<Vector3> path = new List<Vector3>();
+    protected Pathfinding.Input input;
+    protected List<Vector3> path = new List<Vector3>();
     // Start is called before the first frame update
     void Start()
     {
         world.enemyList.Add(this);
     }
-
     void OnTriggerEnter(Collider col)
     {
         hp -= 40;
@@ -32,14 +31,13 @@ public class Enemy : Entity
         Projectile projectile = col.gameObject.GetComponent<Projectile>();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected void move(float pathfindingScale)
     {
         if (threadStart && goal != null)
         {
             threadStart = false;
             Thread thread = new Thread(Pathfinding.calculatePath);
-            input = new Pathfinding.Input(world.getIndexPosition(transform.position), world.getIndexPosition(goal.transform.position), world, new List<Vector3>());
+            input = new Pathfinding.Input(world.getIndexPosition(transform.position), world.getIndexPosition(goal.transform.position), world, pathfindingScale, new List<Vector3>());
             thread.Start(input);
         }
         if (input != null && input.finished && time)
@@ -57,14 +55,7 @@ public class Enemy : Entity
 
             if (Math.Abs(transform.position.x - path[0].x) > 0.1f || Math.Abs(transform.position.z - path[0].z) > 0.1f)
             {
-                Vector3 wantToMove = world.getHeight(path[0]);
-                Vector3 direction = wantToMove - transform.position;
-                float angle = Vector3.Angle(Vector3.up, direction) - 90;
-
-                if (angle < -45f)
-                    transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, wantToMove.y, transform.position.z), 0.001f);
-                else
-                    transform.position = Vector3.MoveTowards(transform.position, wantToMove, 0.02f);
+                MakeAktion();
             }
             else
             {
@@ -78,12 +69,12 @@ public class Enemy : Entity
             world.turret.hp -= 100;
             delete();
         }
-
-
-
     }
 
-    private void delete()
+    protected abstract void MakeAktion();
+    
+
+    protected void delete()
     {
         world.enemyList.Remove(this);
         Destroy(gameObject);

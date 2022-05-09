@@ -31,7 +31,12 @@ public class Spawner : MonoBehaviour
                 float x = spawnerPosition.x + scaleX;
                 float z = spawnerPosition.z + scaleZ;
                 Vector3 position = world.getHeight(new Vector3(x, 0, z));
-                ProjectileConcreteFactory.ConstructEnemy(position, world.transform, world, world.turret, 150 + world.waveCounter*10);
+
+                int type = Random.Range(0,10);
+                if(type>0)
+                    ProjectileConcreteFactory.ConstructEnemy(position, world.transform, world, world.turret, 150 + world.waveCounter*25);
+                else
+                    ProjectileConcreteFactory.ConstructWallbreaker(position, world.transform, world, world.turret, 25 + world.waveCounter*5);
 
                 
                 if(counter%(world.waveCounter*10)==0){

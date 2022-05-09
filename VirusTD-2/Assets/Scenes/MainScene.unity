@@ -681,6 +681,7 @@ MonoBehaviour:
   characteristic: {fileID: 365457385}
   turret: {fileID: 0}
   enemy: {fileID: 0}
+  blueprint: {fileID: 0}
   enemyList: []
   turretList: []
   gold: 100

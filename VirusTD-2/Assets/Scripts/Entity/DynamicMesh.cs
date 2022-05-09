@@ -96,6 +96,45 @@ public abstract class DynamicMesh : MonoBehaviour
 
         return false;
     }
+
+    public bool WouldIntersect(Vector3 pos)
+    {
+        int sidxMax = voxels.Length;
+        Vector3 positionSubtrahend = pos;
+        Vector3 positionMinuend = transform.localPosition;
+
+        Vector3 scale = transform.localScale;
+
+        float fx = positionSubtrahend.x - positionMinuend.x;
+        float fy = positionSubtrahend.y - positionMinuend.y;
+        float fz = positionSubtrahend.z - positionMinuend.z;
+        int sx = Mathf.RoundToInt(fx / scale.x);
+        int sy = Mathf.RoundToInt(fy / scale.y);
+        int sz = Mathf.RoundToInt(fz / scale.z);
+
+        Debug.DrawRay(transform.position+new Vector3(sx*scale.x, sy*scale.y, sz*scale.z), Vector3.up, Color.cyan, 10);
+        int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
+        if (sidx >= 0 && sidx <= sidxMax)
+        {
+            try{
+
+           
+            if (voxels[sidx] < 1)
+            {
+
+                return true;
+            }
+             }catch(Exception e){
+                Debug.Log("error: "+ e+", max: "+sidxMax + ", acc: "+sidx);
+            }
+
+        }
+        //GameObject gay = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //gay.transform.position = pos;
+        //gay.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
+        return false;
+    }
     public abstract void specificUpdate();
     public void updateMesh()
     {

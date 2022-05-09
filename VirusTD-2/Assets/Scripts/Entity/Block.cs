@@ -27,9 +27,6 @@ public class Block : DynamicMesh
 
     }
 
-    public void Update() {
-    }
-
     public void rebuild(){
         
         Tuple<float[], ColorMode[]> results = MeshBuilder.createTerrainMesh(index, gridSize, 1f);
@@ -47,6 +44,22 @@ public class Block : DynamicMesh
                         int idx = x + y*gridSize+z*gridSize*gridSize;
                         voxels[idx] = -1;
                         colorList[idx] = ColorMode.STEEL;
+                    }
+                }
+            }
+            updateMesh();
+            
+    }
+
+    public void fill(Vector3Int start, Vector3Int end){
+        for (int x = start.x; x < end.x; x++)
+            {  
+                for (int y = start.y; y < end.y; y++)
+                { 
+                    for (int z = start.z; z < end.z; z++)
+                    {   
+                        int idx = x + y*gridSize+z*gridSize*gridSize;
+                        voxels[idx] = 1;
                     }
                 }
             }
