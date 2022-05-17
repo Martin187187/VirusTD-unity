@@ -27,6 +27,8 @@ public class TerrainManager : MonoBehaviour
 
     public bool running = false;
     public int waveCounter = 1;
+
+    public List<Spawner> spawners = new List<Spawner>();
     void Start()
     {
         Application.targetFrameRate = 144;
@@ -47,12 +49,27 @@ public class TerrainManager : MonoBehaviour
                 }
             }
         }
-        entityList.Add(ProjectileConcreteFactory.ConstructEntity(new Vector3(4, 40, 4), new Vector3(1 / 4f, 1 / 4f, 1 / 4f), transform, 5, new Vector3(0, -0.1f, 0)));
+        //entityList.Add(ProjectileConcreteFactory.ConstructEntity(new Vector3(4, 40, 4), new Vector3(1 / 4f, 1 / 4f, 1 / 4f), transform, 5, new Vector3(0, -0.1f, 0)));
 
     }
     // Update is called once per frame
     void Update()
     {
+        bool allFinished = true;
+        foreach (Spawner spawner in spawners)
+        {
+            if (allFinished)
+                allFinished = spawner.finished || spawner.startWave>=waveCounter;
+        }
+
+        if (allFinished)
+        {
+            foreach (Spawner spawner in spawners)
+            {
+                spawner.finished = false;
+            }
+                waveCounter++;
+        }
         if (turret == null)
             turret = ProjectileConcreteFactory.ConstructBase(getHeight(new Vector3(64, 0, 64)), transform, this);
         for (int i = 0; i < entityList.Count; i++)
@@ -127,7 +144,7 @@ public class TerrainManager : MonoBehaviour
                 }
                 else
                 {
-  
+
                     //enemy = ProjectileConcreteFactory.ConstructEnemy(position, transform, this, turret);
                     /*
                     Vector3 movedPosition = position + castPoint.direction * chunkLength / gridSize / 2;
@@ -174,7 +191,12 @@ public class TerrainManager : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.T))
                     blueprint = ProjectileConcreteFactory.ConstructBlueprint(position, transform, this);
                 else if (Input.GetKeyDown(KeyCode.L))
-                    blueprint = ProjectileConcreteFactory.ConstructLaserLine(position, transform, this);
+                {
+
+                    Vector3 height = getHeight(position);
+                    if (height.y >= position.y)
+                        blueprint = ProjectileConcreteFactory.ConstructLaserLine(position, transform, this);
+                }
             }
         }
 
@@ -285,14 +307,12 @@ public class TerrainManager : MonoBehaviour
         float blockStartZ = Mathf.Min(first.z, second.z);
         float blockEndZ = Mathf.Max(first.z, second.z);
 
-        Debug.Log(blockEndY + "26.3: " + (int)((blockEndY % chunkLength) / 0.5f + 0.5f));
         for (int i = startX; i <= endX; i++)
         {
             for (int k = startY; k <= endY; k++)
             {
                 for (int j = startZ; j <= endZ; j++)
                 {
-                    Debug.Log("i: " + i + ", j: " + j + "k: " + k);
                     Block block = blockArray[i, k, j];
 
                     Vector3 scale = block.getScale();

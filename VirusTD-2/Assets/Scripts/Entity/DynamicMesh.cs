@@ -14,6 +14,7 @@ public abstract class DynamicMesh : MonoBehaviour
 
 
     public float[] voxels;
+    public float[] hp;
     public ColorMode[] colorList;
 
 
@@ -32,9 +33,9 @@ public abstract class DynamicMesh : MonoBehaviour
 
                     Vector3 scale = transform.localScale;
                     Vector3 scaleSubtrahend = meshSubtrahend.transform.localScale;
-                    float fx = positionSubtrahend.x + x / (meshSubtrahend.gridSize - 1.0f)*scaleSubtrahend.x - positionMinuend.x;
-                    float fy = positionSubtrahend.y + y / (meshSubtrahend.gridSize - 1.0f)*scaleSubtrahend.y - positionMinuend.y;
-                    float fz = positionSubtrahend.z + z / (meshSubtrahend.gridSize - 1.0f)*scaleSubtrahend.z - positionMinuend.z;
+                    float fx = positionSubtrahend.x + x / (meshSubtrahend.gridSize - 1.0f) * scaleSubtrahend.x - positionMinuend.x;
+                    float fy = positionSubtrahend.y + y / (meshSubtrahend.gridSize - 1.0f) * scaleSubtrahend.y - positionMinuend.y;
+                    float fz = positionSubtrahend.z + z / (meshSubtrahend.gridSize - 1.0f) * scaleSubtrahend.z - positionMinuend.z;
 
                     int sx = Mathf.RoundToInt(fx / scale.x);
                     int sy = Mathf.RoundToInt(fy / scale.y);
@@ -72,21 +73,27 @@ public abstract class DynamicMesh : MonoBehaviour
         int sy = Mathf.RoundToInt(fy / scale.y);
         int sz = Mathf.RoundToInt(fz / scale.z);
 
-        Debug.DrawRay(transform.position+new Vector3(sx*scale.x, sy*scale.y, sz*scale.z), Vector3.up, Color.cyan, 10);
+        Debug.DrawRay(transform.position + new Vector3(sx * scale.x, sy * scale.y, sz * scale.z), Vector3.up, Color.cyan, 10);
         int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
         if (sidx >= 0 && sidx <= sidxMax)
         {
-            try{
-
-           
-            if (voxels[sidx] < 1)
+            try
             {
 
-                voxels[sidx] = 1;
-                return true;
+
+                if (voxels[sidx] < 1)
+                {
+                    if(hp[sidx] <0)
+                        voxels[sidx] = 1;
+                    else
+                        hp[sidx] -= 0.1f;
+
+                    return true;
+                }
             }
-             }catch(Exception e){
-                Debug.Log("error: "+ e+", max: "+sidxMax + ", acc: "+sidx);
+            catch (Exception e)
+            {
+                Debug.Log("error: " + e + ", max: " + sidxMax + ", acc: " + sidx);
             }
 
         }
@@ -112,20 +119,23 @@ public abstract class DynamicMesh : MonoBehaviour
         int sy = Mathf.RoundToInt(fy / scale.y);
         int sz = Mathf.RoundToInt(fz / scale.z);
 
-        Debug.DrawRay(transform.position+new Vector3(sx*scale.x, sy*scale.y, sz*scale.z), Vector3.up, Color.cyan, 10);
+        Debug.DrawRay(transform.position + new Vector3(sx * scale.x, sy * scale.y, sz * scale.z), Vector3.up, Color.cyan, 10);
         int sidx = sx + sy * gridSize + sz * gridSize * gridSize;
         if (sidx >= 0 && sidx <= sidxMax)
         {
-            try{
-
-           
-            if (voxels[sidx] < 1)
+            try
             {
 
-                return true;
+
+                if (voxels[sidx] < 1)
+                {
+
+                    return true;
+                }
             }
-             }catch(Exception e){
-                Debug.Log("error: "+ e+", max: "+sidxMax + ", acc: "+sidx);
+            catch (Exception e)
+            {
+                Debug.Log("error: " + e + ", max: " + sidxMax + ", acc: " + sidx);
             }
 
         }
@@ -144,8 +154,9 @@ public abstract class DynamicMesh : MonoBehaviour
         List<Vector3> verts = new List<Vector3>();
         List<int> indices = new List<int>();
         List<ColorMode> colors = new List<ColorMode>();
+        List<float> hps = new List<float>();
 
-        marching.Generate(voxels, colorList, gridSize, gridSize, gridSize, verts, indices, colors);
+        marching.Generate(voxels, colorList, hp, gridSize, gridSize, gridSize, verts, indices, colors, hps);
 
         Mesh mesh = new Mesh();
         mesh.SetVertices(verts);
@@ -175,15 +186,15 @@ public abstract class DynamicMesh : MonoBehaviour
             else
                 uvs[i] = new Vector2(vertices[i].x, vertices[i].y);
             if (colors[i] == ColorMode.STEEL)
-                colors2[i] = new Color(0.25f, 0, 0);
+                colors2[i] = new Color(0.25f, 0, hps[i]);
             else if (colors[i] == ColorMode.ROCK)
-                colors2[i] = new Color(0, 0, 0);
+                colors2[i] = new Color(0, 0, hps[i]);
             else if (colors[i] == ColorMode.HIGHGRASS && normals[i].y > 0)
-                colors2[i] = new Color(0.15f, 1, 0);
+                colors2[i] = new Color(0.15f, 1, hps[i]);
             else if (normals[i].y > 0)
-                colors2[i] = new Color(0.15f, 0, 0);
+                colors2[i] = new Color(0.15f, 0, hps[i]);
             else
-                colors2[i] = new Color(0, 0, 0);
+                colors2[i] = new Color(0, 0, hps[i]);
 
 
         }
@@ -192,12 +203,12 @@ public abstract class DynamicMesh : MonoBehaviour
         mesh.uv = uvs;
         mesh.colors = colors2;
 
-            gameObject.GetComponent<MeshFilter>().mesh = mesh;
-            
-            if (this is Block)
-            {
-                gameObject.GetComponent<MeshCollider>().sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
-            }
+        gameObject.GetComponent<MeshFilter>().mesh = mesh;
+
+        if (this is Block)
+        {
+            gameObject.GetComponent<MeshCollider>().sharedMesh = gameObject.GetComponent<MeshFilter>().mesh;
+        }
         specificUpdate();
     }
     public Vector3 getPosition()

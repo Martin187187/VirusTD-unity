@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Turret : Entity
 {
-    
-        protected void delete()
+    public float damage = 20;
+    protected void delete()
     {
         world.turretList.Remove(this);
         Destroy(gameObject);

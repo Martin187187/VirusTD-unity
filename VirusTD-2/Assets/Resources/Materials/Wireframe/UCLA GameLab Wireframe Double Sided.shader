@@ -30,8 +30,8 @@ Shader "UCLA Game Lab/Wireframe Double Sided"
             Cull Front
 
             CGPROGRAM
-            #include "UnityCG.cginc"
-            #include "UCLA GameLab Wireframe Shaders.cginc"
+            #include "/UnityCG.cginc"
+            #include "/UCLA GameLab Wireframe Shaders.cginc"
             #pragma target 5.0
             #pragma vertex UCLAGL_vert
             #pragma geometry UCLAGL_geom

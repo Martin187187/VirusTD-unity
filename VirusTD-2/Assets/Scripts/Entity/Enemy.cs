@@ -21,6 +21,7 @@ public abstract class Enemy : Entity
     }
     void OnTriggerEnter(Collider col)
     {
+        Turret turret = col.gameObject.GetComponent<Turret>();
         hp -= 40;
         if (hp < 0)
         {
@@ -28,7 +29,6 @@ public abstract class Enemy : Entity
             delete();
             world.gold++;
         }
-        Projectile projectile = col.gameObject.GetComponent<Projectile>();
     }
 
     protected void move(float pathfindingScale)
@@ -61,7 +61,7 @@ public abstract class Enemy : Entity
             {
                 path.RemoveAt(0);
 
-                Debug.DrawRay(world.getHeight(transform.position), Vector3.up, Color.blue, 500);
+                Debug.DrawRay(world.getHeight(transform.position), Vector3.up, Color.blue, 3);
             }
         }
         if (!time && path.Count == 0)

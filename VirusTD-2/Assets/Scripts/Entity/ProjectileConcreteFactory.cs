@@ -51,13 +51,13 @@ public class ProjectileConcreteFactory
     }
 
 
-    public static Turret ConstructTarget(Vector3 position, Transform transform, TerrainManager world)
+    public static Gunner ConstructTarget(Vector3 position, Transform transform, TerrainManager world)
     {
         GameObject en = GameObject.Instantiate(Resources.Load<GameObject>("Assets/gun"), position, Quaternion.identity);
         en.name = "Turret";
         en.transform.parent = transform;
 
-        Turret target = en.AddComponent<Turret>();
+        Gunner target = en.AddComponent<Gunner>();
         target.world = world;
         return target;
     }
@@ -80,6 +80,7 @@ public class ProjectileConcreteFactory
 
     public static BlueprintLaserLine ConstructLaserLine(Vector3 position, Transform transform, TerrainManager world)
     {
+        
         GameObject en = GameObject.CreatePrimitive(PrimitiveType.Cube);
         en.name = "first";
         en.transform.position = position;

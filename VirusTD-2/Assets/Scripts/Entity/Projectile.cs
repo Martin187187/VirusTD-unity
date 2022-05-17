@@ -11,9 +11,10 @@ public class Projectile : DynamicMesh
     public void Start()
     {
 
-        Tuple<float[], ColorMode[]> result = MeshBuilder.createCubeMesh(gridSize);
+        Tuple<float[], ColorMode[], float[]> result = MeshBuilder.createCubeMesh(gridSize);
         voxels = result.Item1;
         colorList = result.Item2;
+        hp = result.Item3;
 
         gameObject.AddComponent<MeshRenderer>();
         gameObject.GetComponent<Renderer>().materials = materials;

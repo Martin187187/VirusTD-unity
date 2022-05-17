@@ -11,7 +11,7 @@ namespace MarchingCubesProject
 
         float Surface { get; set; }
 
-        void Generate(IList<float> voxels, ColorMode[] colorsInput, int width, int height, int depth, IList<Vector3> verts, IList<int> indices, IList<ColorMode> colors);
+        void Generate(IList<float> voxels, ColorMode[] colorsInput, float[] hpInput, int width, int height, int depth, IList<Vector3> verts, IList<int> indices, IList<ColorMode> colors, IList<float> hp);
 
     }
 

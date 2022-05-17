@@ -8,9 +8,10 @@ public class MeshBuilder
     {
         characteristic = b;
     }
-    public static Tuple<float[], ColorMode[]> createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale)
+    public static Tuple<float[], ColorMode[], float[]> createTerrainMesh(Vector3Int position, int gridSize, float perlinNoiseScale)
     {
         float[] voxels = new float[gridSize * gridSize * gridSize];
+        float[] hps = new float[gridSize * gridSize * gridSize];
         ColorMode[] colors = new ColorMode[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
         {
@@ -37,18 +38,20 @@ public class MeshBuilder
                         voxels[idx] = -1;
                     }
                     colors[idx] = y2d.GetColor();
+                    hps[idx] = 1;
 
                 }
             }
 
         }
-        return Tuple.Create(voxels, colors);
+        return Tuple.Create(voxels, colors, hps);
     }
 
-    public static Tuple<float[], ColorMode[]> createCubeMesh(int gridSize)
+    public static Tuple<float[], ColorMode[], float[]> createCubeMesh(int gridSize)
     {
         float[] voxels = new float[gridSize * gridSize * gridSize];
         ColorMode[] colors = new ColorMode[gridSize * gridSize * gridSize];
+        float[] hps = new float[gridSize * gridSize * gridSize];
         for (int x = 0; x < gridSize; x++)
         {
             for (int y = 0; y < gridSize; y++)
@@ -62,11 +65,12 @@ public class MeshBuilder
                     else
                         voxels[idx] = -1;
                     colors[idx] = ColorMode.ROCK;
+                    hps[idx] = 1;
                 }
             }
         }
 
-        return Tuple.Create(voxels, colors);
+        return Tuple.Create(voxels, colors, hps);
     }
     public static Tuple<float[], ColorMode[]> createExplosionMesh(int gridSize)
     {

@@ -13,7 +13,6 @@ public class Pathfinding
 
         List<Vector3Int> result = shortestPath(input.start, input.goal, input.world, input.scale);
 
-        Debug.Log("finished" + result.Count);
         List<Vector3> rawPath = new List<Vector3>();
         foreach (Vector3 item in result)
         {
