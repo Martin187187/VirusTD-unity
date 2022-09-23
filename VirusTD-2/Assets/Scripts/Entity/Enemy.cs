@@ -15,14 +15,21 @@ public abstract class Enemy : Entity
     protected Pathfinding.Input input;
     protected List<Vector3> path = new List<Vector3>();
     // Start is called before the first frame update
+
+    public HealthBar health;
     void Start()
     {
+        
+        GameObject en = GameObject.Instantiate(Resources.Load<GameObject>("Assets/Canvas"), gameObject.transform.position + new Vector3(0,2,0), Quaternion.identity);
+        health = en.transform.GetChild(0).GetComponent<HealthBar>();
+        en.transform.parent = gameObject.transform;
         world.enemyList.Add(this);
     }
     void OnTriggerEnter(Collider col)
     {
         Turret turret = col.gameObject.GetComponent<Turret>();
         hp -= 40;
+        health.SetHealth((int)(0.01 * hp));
         if (hp < 0)
         {
 
